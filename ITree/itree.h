@@ -48,6 +48,8 @@ ITree itree_eliminar(ITree arbol, Interval * interval);
 */
 void itree_recorrer_dfs(ITree arbol, FuncionIntervalVoid funcion);
 
+void itree_recorrer_bfs(ITree arbol, FuncionIntervalVoid funcion);
+
 ITree itree_unir(ITree itree1, ITree itree2);
 
 ITree itree_intersecar(ITree itree1, ITree itree2);

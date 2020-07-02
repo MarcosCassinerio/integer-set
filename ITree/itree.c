@@ -149,6 +149,15 @@ void itree_destruir(ITree arbol, FuncionIntervalVoid funcion) {
 }
 
 ITree itree_insertar(ITree arbol, Interval * interval) {
+  printf("Inserta intervalo ");
+  interval_imprimir(interval);
+  printf(" en arbol ");
+  itree_recorrer_dfs(arbol, interval_imprimir);
+  if (arbol) {
+    printf(" con raiz ");
+    interval_imprimir(arbol->interval);
+  }
+  printf("\n");
   Interval * intervalConcat = NULL;
   if (!interval_valido(interval))
     return arbol;
@@ -182,10 +191,7 @@ ITree itree_eliminar(ITree arbol, Interval * interval) {
     printf("  Interval no encontrado\n");
     return arbol;
   }
-  if (interval_extremo_izq(interval) ==
-      interval_extremo_izq(arbol->interval)
-      && interval_extremo_der(interval) ==
-      interval_extremo_der(arbol->interval)) {
+  if (interval_extremo_izq(interval) == interval_extremo_izq(arbol->interval) && interval_extremo_der(interval) == interval_extremo_der(arbol->interval)) {
     if (!arbol->izq || !arbol->der) {
       interval_destruir(arbol->interval);
       aux = arbol->izq ? arbol->izq : arbol->der;
@@ -204,7 +210,6 @@ ITree itree_eliminar(ITree arbol, Interval * interval) {
       aux = itree_obtener_menor(arbol->der);
       arbol->interval = interval_crear(interval_extremo_izq(aux->interval), interval_extremo_der(aux->interval));
       arbol->der = itree_eliminar(arbol->der, aux->interval);
-      interval_destruir(aux->interval);
     }
   } else if (interval_extremo_izq(interval) > interval_extremo_izq(arbol->interval))
     arbol->der = itree_eliminar(arbol->der, interval);
@@ -224,6 +229,21 @@ void itree_recorrer_dfs(ITree arbol, FuncionIntervalVoid funcion) {
     funcion(arbol->interval);
     // Aplica la funcion itree_recorrer_dfs en el hijo derecho
     itree_recorrer_dfs(arbol->der, funcion);
+  }
+}
+
+void itree_recorrer_bfs(ITree arbol, FuncionIntervalVoid funcion) {
+  if (arbol) {                  // Si el arbol no esta vacio
+    Queue queue = queue_crear();        // Crea una Queue vacia
+    ITree aux;
+    queue = queue_push(queue, arbol);   // Metemos la raiz en la cola
+    while (queue) {             // Mientras la cola no este vacia
+      aux = (ITree) queue_pop(&queue);  // Sacamos el primer nodo de la cola
+      funcion(aux->interval);  // Aplica la funcion en el intervalo de aux
+      // Si aux tiene hijos, los mete en la cola
+      queue = aux->izq ? queue_push(queue, aux->izq) : queue;
+      queue = aux->der ? queue_push(queue, aux->der) : queue;
+    }
   }
 }
 
