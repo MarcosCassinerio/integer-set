@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
 typedef struct _Interval Interval;
 
@@ -47,5 +49,7 @@ void interval_imprimir(Interval * interval);
   error, 0 en caso contrario.
 */
 int interval_valido(Interval * interval);
+
+Interval * interval_interseccion(Interval * interval1, Interval * interval2);
 
 #endif                          /* __INTERVAL_H__ */

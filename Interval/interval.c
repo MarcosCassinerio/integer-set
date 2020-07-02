@@ -17,7 +17,8 @@ Interval *interval_crear(int extremoIzq, int extremoDer) {
 }
 
 void interval_destruir(Interval * interval) {
-  free(interval);
+  if (interval)
+    free(interval);
 }
 
 int interval_extremo_izq(Interval * interval) {
@@ -50,11 +51,17 @@ void interval_imprimir(Interval * interval) {
 }
 
 int interval_valido(Interval * interval) {
-  // Si el extremo izquierdo del intervalo es mayor al extremo derecho
-  if (interval->extremoIzq > interval->extremoDer) {
+  // Si no existe el intervalo o  el extremo izquierdo del intervalo es mayor al extremo derecho
+  if (!interval || (interval->extremoIzq > interval->extremoDer)) {
     printf("  Intervalo invalido\n");
     interval_destruir(interval); // Eliminamos el intervalo ya que es invalido
     return 0;
   }
   return 1;
+}
+
+Interval * interval_interseccion(Interval * interval1, Interval * interval2) {
+  if (interval_extremo_izq(interval1) <= interval_extremo_der(interval2) && interval_extremo_der(interval1) >= interval_extremo_izq(interval2))
+    return interval_crear(MAX(interval_extremo_izq(interval1), interval_extremo_izq(interval2)), MIN(interval_extremo_der(interval1), interval_extremo_der(interval2)));
+  return NULL;                              
 }

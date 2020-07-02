@@ -2,9 +2,9 @@
 #define __ITREE_H__
 
 #include "../Interval/interval.h"
+#include "../Queue/queue.h"
 #include <stddef.h>
 #include <stdio.h>
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 typedef struct _INodo INodo;
 
@@ -26,12 +26,6 @@ ITree itree_crear();
 void itree_destruir(ITree arbol, FuncionIntervalVoid funcion);
 
 /*
-    itree_altura: ITree -> int
-    Dado un arbol, devuelve su altura.
-*/
-int itree_altura(ITree arbol);
-
-/*
     itree_insertar: ITree Interval* -> ITree
     Dado un ITree y un puntero a un interval, lo inserta en al arbol, en
     caso que sea valido y que no se encuentre ya en el arbol.
@@ -48,10 +42,14 @@ ITree itree_insertar(ITree arbol, Interval * interval);
 ITree itree_eliminar(ITree arbol, Interval * interval);
 
 /*
-    itree_recorrer_dfs: ITree FuncionIntervaloVoid
+    itree_recorrer_dfs: ITree FuncionIntervalVoid
     Recorre el arbol con un algoritmo DFS de forma inorder, aplicando la 
-    funcion dada como parametro a los intervalos almacenados en los nodos.
+    funcion dada como parametro a los intervals almacenados en los nodos.
 */
 void itree_recorrer_dfs(ITree arbol, FuncionIntervalVoid funcion);
+
+ITree itree_unir(ITree itree1, ITree itree2);
+
+ITree itree_intersecar(ITree itree1, ITree itree2);
 
 #endif                          /* __ITREE_H__ */

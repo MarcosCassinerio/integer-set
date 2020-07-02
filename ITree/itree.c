@@ -8,7 +8,10 @@ struct _INodo {
   struct _INodo *izq;
   struct _INodo *der;
 };
-
+/*
+    itree_nuevo_nodo: Interval* -> INodo
+    Dado un intervalo, devuelve un nuevo nodo con el intervalo en el.
+*/
 INodo *itree_nuevo_nodo(Interval * interval) {
   // Pedimos la memoria para un nodo
   INodo *nodo = (INodo *) malloc(sizeof(INodo));
@@ -18,6 +21,16 @@ INodo *itree_nuevo_nodo(Interval * interval) {
   nodo->izq = NULL;
   nodo->der = NULL;
   return nodo;
+}
+
+/*
+    itree_altura: ITree -> int
+    Dado un arbol, devuelve su altura.
+*/
+int itree_altura(ITree arbol) {
+  if (!arbol)                   // Si el arbol esta vacio
+    return -1;                  // Retornamos -1 para facilitar calculos
+  return arbol->altura;         // Retornamos su altura
 }
 
 /*
@@ -135,17 +148,12 @@ void itree_destruir(ITree arbol, FuncionIntervalVoid funcion) {
   }
 }
 
-int itree_altura(ITree arbol) {
-  if (!arbol)                   // Si el arbol esta vacio
-    return -1;                  // Retornamos -1 para facilitar calculos
-  return arbol->altura;         // Retornamos su altura
-}
-
 ITree itree_insertar(ITree arbol, Interval * interval) {
+  Interval * intervalConcat = NULL;
   if (!interval_valido(interval))
     return arbol;
   if (arbol) {
-    Interval * intervalConcat = interval_concat(arbol->interval, interval);
+    intervalConcat = interval_concat(arbol->interval, interval);
     if (intervalConcat) {
       interval = intervalConcat;
       if (!arbol-> izq && !arbol->der) {
@@ -166,8 +174,8 @@ ITree itree_insertar(ITree arbol, Interval * interval) {
   return itree_nuevo_nodo(interval);
 }
 
-
 ITree itree_eliminar(ITree arbol, Interval * interval) {
+  INodo * aux = itree_crear();
   if (!interval_valido(interval))
     return arbol;
   if (!arbol) {
@@ -180,7 +188,7 @@ ITree itree_eliminar(ITree arbol, Interval * interval) {
       interval_extremo_der(arbol->interval)) {
     if (!arbol->izq || !arbol->der) {
       interval_destruir(arbol->interval);
-      ITree aux = arbol->izq ? arbol->izq : arbol->der;
+      aux = arbol->izq ? arbol->izq : arbol->der;
       if (aux) {
         arbol->interval = interval_crear(interval_extremo_izq(aux->interval), interval_extremo_der(aux->interval));
         arbol->der = aux->der;
@@ -193,7 +201,7 @@ ITree itree_eliminar(ITree arbol, Interval * interval) {
       }
     } else {
       interval_destruir(arbol->interval);
-      INodo * aux = itree_obtener_menor(arbol->der);
+      aux = itree_obtener_menor(arbol->der);
       arbol->interval = interval_crear(interval_extremo_izq(aux->interval), interval_extremo_der(aux->interval));
       arbol->der = itree_eliminar(arbol->der, aux->interval);
       interval_destruir(aux->interval);
@@ -217,4 +225,65 @@ void itree_recorrer_dfs(ITree arbol, FuncionIntervalVoid funcion) {
     // Aplica la funcion itree_recorrer_dfs en el hijo derecho
     itree_recorrer_dfs(arbol->der, funcion);
   }
+}
+
+void itree_obtener_queue(ITree arbol, Queue queue) {
+  if (arbol) {
+    itree_obtener_queue(arbol->izq, queue);
+
+    interval_imprimir(arbol->interval);
+    queue = queue_push(queue, interval_crear(interval_extremo_izq(arbol->interval), interval_extremo_der(arbol->interval)));
+
+    itree_obtener_queue(arbol->der, queue);
+  }
+}
+
+void itree_copiar(ITree arbol, ITree copia) {
+  if (arbol) {
+    itree_copiar(arbol->izq, copia);
+
+    copia = itree_insertar(copia, arbol->interval);
+
+    itree_copiar(arbol->der, copia);
+  }
+}
+
+ITree itree_unir(ITree itree1, ITree itree2) {
+  printf("unir\n");
+  printf("itree1: ");
+  itree_recorrer_dfs(itree1, interval_imprimir);
+  printf("\n");
+  printf("itree2: ");
+  itree_recorrer_dfs(itree2, interval_imprimir);
+  printf("\n");
+  ITree arbolUnion = itree_crear();
+  Queue queue = queue_crear();
+  Interval * aux = NULL;
+  itree_obtener_queue(itree1, queue);
+  while (queue)
+    arbolUnion = itree_insertar(arbolUnion, (Interval *) queue_pop(&queue));
+  itree_recorrer_dfs(arbolUnion, interval_imprimir);
+  itree_obtener_queue(itree2, queue);
+  while (queue)
+    arbolUnion = itree_insertar(arbolUnion, (Interval *) queue_pop(&queue));
+  itree_recorrer_dfs(arbolUnion, interval_imprimir);
+  return arbolUnion;
+}
+
+ITree itree_intersecar(ITree itree1, ITree itree2) {
+  ITree arbolInterserccion = itree_crear();
+  Queue queue1 = queue_crear();
+  Queue queue2 = queue_crear();
+  Interval * interval1 = NULL;
+  Interval * interval2 = NULL;
+  itree_obtener_queue(itree1, queue1);
+  itree_obtener_queue(itree2, queue2);
+  while (queue1) {
+    interval1 = queue_pop(&queue1);
+    while (queue2) {
+      interval2 = queue_pop(&queue2);
+      arbolInterserccion = itree_insertar(arbolInterserccion, interval_interseccion(interval1, interval2));
+    }
+  }
+  return arbolInterserccion;
 }
