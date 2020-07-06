@@ -16,20 +16,20 @@ Interval *interval_crear(int extremoIzq, int extremoDer) {
   return interval;             // Retornamos el puntero al interval
 }
 
-void interval_destruir(Interval * interval) {
+void interval_destruir(Interval *interval) {
   if (interval)
     free(interval);
 }
 
-int interval_extremo_izq(Interval * interval) {
+int interval_extremo_izq(Interval *interval) {
   return interval->extremoIzq;
 }
 
-int interval_extremo_der(Interval * interval) {
+int interval_extremo_der(Interval *interval) {
   return interval->extremoDer;
 }
 
-Interval *interval_concat(Interval * interval1, Interval * interval2) {
+Interval *interval_concat(Interval *interval1, Interval *interval2) {
     if (interval_extremo_izq(interval1) <= interval_extremo_der(interval2) && interval_extremo_der(interval1) >= interval_extremo_izq(interval2)) {
         int extremo_izq = interval_extremo_izq(interval1) < interval_extremo_izq(interval2) ? interval_extremo_izq(interval1) : interval_extremo_izq(interval2);
         int extremo_der = interval_extremo_der(interval1) > interval_extremo_der(interval2) ? interval_extremo_der(interval1) : interval_extremo_der(interval2);
@@ -42,7 +42,7 @@ Interval *interval_concat(Interval * interval1, Interval * interval2) {
     return NULL;
 }
 
-void interval_imprimir(Interval * interval) {
+void interval_imprimir(Interval *interval) {
   if (interval)
     if (interval_extremo_izq(interval) == interval_extremo_der(interval))
       printf(" %d ", interval_extremo_izq(interval));
@@ -50,7 +50,7 @@ void interval_imprimir(Interval * interval) {
       printf(" %d:%d ", interval_extremo_izq(interval), interval_extremo_der(interval));
 }
 
-int interval_valido(Interval * interval) {
+int interval_valido(Interval *interval) {
   // Si no existe el intervalo o  el extremo izquierdo del intervalo es mayor al extremo derecho
   if (!interval || (interval->extremoIzq > interval->extremoDer)) {
     printf("  Intervalo invalido\n");
@@ -60,8 +60,17 @@ int interval_valido(Interval * interval) {
   return 1;
 }
 
-Interval * interval_interseccion(Interval * interval1, Interval * interval2) {
+Interval *interval_interseccion(Interval *interval1, Interval *interval2) {
   if (interval_extremo_izq(interval1) <= interval_extremo_der(interval2) && interval_extremo_der(interval1) >= interval_extremo_izq(interval2))
     return interval_crear(MAX(interval_extremo_izq(interval1), interval_extremo_izq(interval2)), MIN(interval_extremo_der(interval1), interval_extremo_der(interval2)));
   return NULL;                              
+}
+
+int interval_comparar(Interval *interval1, Interval *interval2) {
+  if (interval_extremo_izq(interval1) > interval_extremo_izq(interval2))
+    return -1;
+  else if (interval_extremo_izq(interval1) < interval_extremo_izq(interval2))
+    return 1;
+  else
+    return 0;
 }
