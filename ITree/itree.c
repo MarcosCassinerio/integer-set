@@ -120,60 +120,32 @@ ITree itree_balancear(ITree arbol) {
   return arbol;                 // En caso de estar balanceado no cambia nada
 }
 
-ITree itree_crear() {
-  return NULL;
-}
-
-void itree_destruir(ITree arbol) {
-  if (arbol) {
-    itree_destruir(arbol->izq);
-    itree_destruir(arbol->der);
-    interval_destruir(arbol->interval);
-    free(arbol);
-  }
-}
-
-ITree itree_insertar(ITree arbol, Interval *interval) {
-  if (!interval_valido(interval))
-    return arbol;
-  if (arbol) {
-    if (interval_extremo_izq(interval) < interval_extremo_izq(arbol->interval))
-      arbol->izq = itree_insertar(arbol->izq, interval);
-    else
-      arbol->der = itree_insertar(arbol->der, interval);
-    arbol->altura = itree_calcular_altura(arbol);
-    return itree_balancear(arbol);
-  }
-  return itree_nuevo_nodo(interval);
-}
-
-void itree_unir(ITree *itree1, ITree *itree2) {
-  if (*itree2) {
-    itree_unir(itree1, &((*itree2)->izq));
-    *itree1 = itree_insertar(*itree1, interval_crear(interval_extremo_izq((*itree2)->interval), interval_extremo_der((*itree2)->interval)));
-    itree_unir(itree1, &((*itree2)->der));
-  }
-}
-
-void itree_interseccion_intervalo(ITree *itree1, ITree *itree2, Interval *interval) {
+void itree_interseccion_intervalo(ITree *itree1, ITree itree2, Interval *interval) {
   Interval *aux = NULL;
-  if (*itree2) {
-    itree_interseccion_intervalo(itree1, &((*itree2)->izq), interval);
-    aux = interval_interseccion((*itree2)->interval, interval);
+  if (itree2) {
+    itree_interseccion_intervalo(itree1, itree2->izq, interval);
+    aux = interval_interseccion(itree2->interval, interval);
     if (aux)
       *itree1 = itree_insertar(*itree1, aux);
-    itree_interseccion_intervalo(itree1, &((*itree2)->der), interval);
+    itree_interseccion_intervalo(itree1, itree2->der, interval);
   }
 }
 
-void itree_intersecar(ITree *interseccion, ITree *itree1, ITree *itree2) {
-  ITree aux = NULL;
-  if (*itree1) {
-    itree_intersecar(interseccion, &((*itree1)->izq), itree2);
-    itree_interseccion_intervalo(&aux, itree2, (*itree1)->interval);
-    itree_unir(interseccion, &aux);
-    itree_intersecar(interseccion, &((*itree1)->der), itree2);
+Interval *itree_complemento_aux(ITree *complemento, ITree arbol, Interval *interval) {
+  Interval *aux = NULL;
+  if (arbol) {
+    interval = itree_complemento_aux(complemento, arbol->izq, interval);
+    aux = interval_crear(interval_extremo_der(interval), interval_extremo_izq(arbol->interval) - 1);
+    if (interval_valido(aux))
+      *complemento = itree_insertar(*complemento, interval_crear(interval_extremo_izq(aux), interval_extremo_der(aux)));
+    interval_destruir(aux);
+    interval_destruir(interval);
+    interval = interval_crear(interval_extremo_der(arbol->interval) + 1, interval_extremo_der(arbol->interval) + 1);
+    interval = itree_complemento_aux(complemento, arbol->der, interval);
   }
+  if (!interval)
+    interval = interval_crear(INT_MIN, INT_MIN);
+  return interval;
 }
 
 Interval *itree_recorrer_dfs(ITree arbol, Interval *interval) {
@@ -195,6 +167,67 @@ Interval *itree_recorrer_dfs(ITree arbol, Interval *interval) {
     interval = itree_recorrer_dfs(arbol->der, interval);
   }
   return interval;
+}
+
+ITree itree_crear() {
+  return NULL;
+}
+
+void itree_destruir(ITree arbol) {
+  if (arbol) {
+    itree_destruir(arbol->izq);
+    itree_destruir(arbol->der);
+    interval_destruir(arbol->interval);
+    free(arbol);
+  }
+}
+
+ITree itree_insertar(ITree arbol, Interval *interval) {
+  Interval *aux = NULL;
+  if (!interval_valido(interval))
+    return arbol;
+  if (arbol) {
+    if (interval_extremo_izq(interval) == interval_extremo_izq(arbol->interval)){
+      aux = interval_concat(interval, arbol->interval);
+      interval_destruir(arbol->interval);
+      interval_destruir(interval);
+      arbol->interval = aux;
+    } else if (interval_extremo_izq(interval) < interval_extremo_izq(arbol->interval))
+      arbol->izq = itree_insertar(arbol->izq, interval);
+    else
+      arbol->der = itree_insertar(arbol->der, interval);
+    arbol->altura = itree_calcular_altura(arbol);
+    return itree_balancear(arbol);
+  }
+  return itree_nuevo_nodo(interval);
+}
+
+void itree_unir(ITree *itree1, ITree itree2) {
+  if (itree2) {
+    itree_unir(itree1, itree2->izq);
+    *itree1 = itree_insertar(*itree1, interval_crear(interval_extremo_izq(itree2->interval), interval_extremo_der(itree2->interval)));
+    itree_unir(itree1, itree2->der);
+  }
+}
+
+void itree_intersecar(ITree *interseccion, ITree itree1, ITree itree2) {
+  ITree aux = NULL;
+  if (itree1) {
+    itree_intersecar(interseccion, itree1->izq, itree2);
+    itree_interseccion_intervalo(&aux, itree2, itree1->interval);
+    itree_unir(interseccion, aux);
+    itree_intersecar(interseccion, itree1->der, itree2);
+  }
+}
+
+ITree itree_complemento(ITree arbol) {
+  Interval *aux = NULL;
+  ITree complemento = itree_crear();
+  aux = itree_complemento_aux(&complemento, arbol, aux);
+  if (interval_extremo_der(aux) != INT_MAX)
+    complemento = itree_insertar(complemento, interval_crear(interval_extremo_der(aux), INT_MAX));
+  interval_destruir(aux);
+  return complemento;
 }
 
 void itree_imprimir(ITree arbol) {

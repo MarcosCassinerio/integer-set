@@ -4,6 +4,8 @@
 #include "../Interval/interval.h"
 #include <stddef.h>
 #include <stdio.h>
+#define INT_MIN -100
+#define INT_MAX 100
 
 typedef struct _INodo INodo;
 
@@ -32,9 +34,11 @@ void itree_destruir(ITree arbol);
 */
 ITree itree_insertar(ITree arbol, Interval * interval);
 
-void itree_unir(ITree *itree1, ITree *itree2);
+void itree_unir(ITree *itree1, ITree itree2);
 
-void itree_intersecar(ITree *interseccion, ITree *itree1, ITree *itree2);
+void itree_intersecar(ITree *interseccion, ITree itree1, ITree itree2);
+
+ITree itree_complemento(ITree arbol);
 
 /*
     itree_imprimir: ITree
