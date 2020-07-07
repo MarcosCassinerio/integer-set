@@ -4,8 +4,6 @@
 #include "../Interval/interval.h"
 #include <stddef.h>
 #include <stdio.h>
-#define INT_MIN -100
-#define INT_MAX 100
 
 typedef struct _INodo INodo;
 

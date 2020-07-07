@@ -52,7 +52,7 @@ void interval_imprimir(Interval *interval) {
 
 int interval_valido(Interval *interval) {
   // Si no existe el intervalo o  el extremo izquierdo del intervalo es mayor al extremo derecho
-  if (!interval || (interval->extremoIzq > interval->extremoDer)) {
+  if (!interval || (interval->extremoIzq > interval->extremoDer) || (interval->extremoIzq < INT_MIN) || (interval->extremoDer > INT_MAX)) {
     printf("  Intervalo invalido\n");
     interval_destruir(interval); // Eliminamos el intervalo ya que es invalido
     return 0;

@@ -223,8 +223,7 @@ void itree_intersecar(ITree *interseccion, ITree arbol1, ITree arbol2) {
 
 ITree itree_restar(ITree arbol1, ITree arbol2) {
   ITree resta = NULL;
-  ITree complemento = itree_complemento(arbol1);
-  itree_intersecar(&resta, complemento, arbol2);
+  itree_intersecar(&resta, itree_complemento(arbol1), arbol2);
   return resta;
 }
 

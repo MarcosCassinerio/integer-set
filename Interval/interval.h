@@ -5,6 +5,8 @@
 #include <stdio.h>
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
+#define INT_MIN -100
+#define INT_MAX 100
 
 typedef struct _Interval Interval;
 
