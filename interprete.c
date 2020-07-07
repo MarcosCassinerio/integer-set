@@ -38,8 +38,14 @@ int main() {
     */
     ITree arbol = itree_crear();
     ITree arbol2 = itree_crear();
-    Interval *interval1 = interval_crear(-90, 90);
+    Interval *interval1 = interval_crear(20, 20);
+    Interval *interval2 = interval_crear(10, 10);
+    Interval *interval3 = interval_crear(30, 30);
+    Interval *interval4 = interval_crear(40, 40);
     arbol = itree_insertar(arbol, interval1);
+    arbol = itree_insertar(arbol, interval2);
+    arbol = itree_insertar(arbol, interval3);
+    arbol = itree_insertar(arbol, interval4);
     printf("imprimo arbol\n");
     itree_imprimir(arbol);
     printf("\n");

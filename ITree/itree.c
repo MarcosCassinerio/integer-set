@@ -120,14 +120,15 @@ ITree itree_balancear(ITree arbol) {
   return arbol;                 // En caso de estar balanceado no cambia nada
 }
 
-void itree_interseccion_intervalo(ITree *itree1, ITree itree2, Interval *interval) {
+void itree_interseccion_intervalo(ITree *arbol1, ITree arbol2, Interval *interval) {
   Interval *aux = NULL;
-  if (itree2) {
-    itree_interseccion_intervalo(itree1, itree2->izq, interval);
-    aux = interval_interseccion(itree2->interval, interval);
+  if (arbol2) {
+    itree_interseccion_intervalo(arbol1, arbol2->izq, interval);
+    aux = interval_interseccion(arbol2->interval, interval);
     if (aux)
-      *itree1 = itree_insertar(*itree1, aux);
-    itree_interseccion_intervalo(itree1, itree2->der, interval);
+      *arbol1 = itree_insertar(*arbol1, aux);
+    if (interval_extremo_der(interval) > interval_extremo_izq(arbol2->interval))
+      itree_interseccion_intervalo(arbol1, arbol2->der, interval);
   }
 }
 
@@ -202,22 +203,29 @@ ITree itree_insertar(ITree arbol, Interval *interval) {
   return itree_nuevo_nodo(interval);
 }
 
-void itree_unir(ITree *itree1, ITree itree2) {
-  if (itree2) {
-    itree_unir(itree1, itree2->izq);
-    *itree1 = itree_insertar(*itree1, interval_crear(interval_extremo_izq(itree2->interval), interval_extremo_der(itree2->interval)));
-    itree_unir(itree1, itree2->der);
+void itree_unir(ITree *arbol1, ITree arbol2) {
+  if (arbol2) {
+    itree_unir(arbol1, arbol2->izq);
+    *arbol1 = itree_insertar(*arbol1, interval_crear(interval_extremo_izq(arbol2->interval), interval_extremo_der(arbol2->interval)));
+    itree_unir(arbol1, arbol2->der);
   }
 }
 
-void itree_intersecar(ITree *interseccion, ITree itree1, ITree itree2) {
+void itree_intersecar(ITree *interseccion, ITree arbol1, ITree arbol2) {
   ITree aux = NULL;
-  if (itree1) {
-    itree_intersecar(interseccion, itree1->izq, itree2);
-    itree_interseccion_intervalo(&aux, itree2, itree1->interval);
+  if (arbol1) {
+    itree_intersecar(interseccion, arbol1->izq, arbol2);
+    itree_interseccion_intervalo(&aux, arbol2, arbol1->interval);
     itree_unir(interseccion, aux);
-    itree_intersecar(interseccion, itree1->der, itree2);
+    itree_intersecar(interseccion, arbol1->der, arbol2);
   }
+}
+
+ITree itree_restar(ITree arbol1, ITree arbol2) {
+  ITree resta = NULL;
+  ITree complemento = itree_complemento(arbol1);
+  itree_intersecar(&resta, complemento, arbol2);
+  return resta;
 }
 
 ITree itree_complemento(ITree arbol) {

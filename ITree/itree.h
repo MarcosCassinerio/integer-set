@@ -38,6 +38,8 @@ void itree_unir(ITree *itree1, ITree itree2);
 
 void itree_intersecar(ITree *interseccion, ITree itree1, ITree itree2);
 
+ITree itree_restar(ITree arbol1, ITree arbol2);
+
 ITree itree_complemento(ITree arbol);
 
 /*
