@@ -1,6 +1,4 @@
 #include "itree.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 struct _INodo {
   Interval *interval;

@@ -2,8 +2,7 @@
 #define __ITREE_H__
 
 #include "../Interval/interval.h"
-#include <stddef.h>
-#include <stdio.h>
+#include <limits.h>
 
 typedef struct _INodo INodo;
 
