@@ -67,10 +67,57 @@ Interval *leer_compresion(char *string, int posicion, char nombreInterval) {
     }
     return NULL;
 }
-//A = {2, -3, 5, 7, 3}
-//A = {x: 2 <= x <= 4}
+
+int obtenerConjuntoDestino(char *string, char *conjunto, int pos) {
+    conjunto[0] = '\0';
+    if (isalpha(*string) != 0) {
+        if (isdigit(*(string + 1)) != 0 && *(string + 2) == ' ' && *(string + 3) == '=' && *(string + 4) == ' ') {
+            conjunto[0] = *string;
+            conjunto[1] = *(string + 1);
+            conjunto[2] = '\0';
+            pos = 5;
+        } else if (*(string + 1) == ' ' && *(string + 2) == '=' && *(string + 3) == ' ') {
+            conjunto[0] = *string;
+            conjunto[1] = '\0';
+            pos = 4;
+        }
+    }
+    return pos;
+}
+
+int obtenerPrimerConjunto(char *string, char *conjunto, int pos) {
+    conjunto[0] = '\0';
+    if (isalpha(*(string + pos)) != 0) {
+        if (isdigit(*(string + pos + 1)) != 0 && *(string + pos + 2) == ' ') {
+            conjunto[0] = *(string + pos);
+            conjunto[1] = *(string + pos + 1);
+            conjunto[2] = '\0';
+            pos += 3;
+        } else if (*(string + pos + 1) == ' ') {
+            conjunto[0] = *(string + pos);
+            conjunto[1] = '\0';
+            pos += 2;
+        }
+    }
+    return pos;
+}
+
+void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
+    conjunto[0] = '\0';
+    if (isalpha(*(string + pos)) != 0) {
+        if (isdigit(*(string + pos + 1)) != 0 && *(string + pos + 2) == '\0') {
+            conjunto[0] = *(string + pos);
+            conjunto[1] = *(string + pos + 1);
+            conjunto[2] = '\0';
+        } else if (*(string + pos + 1) == '\0') {
+            conjunto[0] = *(string + pos);
+            conjunto[1] = '\0';
+        }
+    }
+}
+
 int main() {
-    char buffer[MAX_LINEA], conjuntoFinal[3], conjuntoUno[3], conjuntoDos[3], nombreInterval, operacion;
+    char buffer[MAX_LINEA], conjuntoDestino[3], conjuntoUno[3], conjuntoDos[3], nombreInterval, operacion;
     //TablaHash *th = tablahash_crear(26, hash);
     Interval *aux = NULL;
     ITree arbol = NULL;
@@ -88,33 +135,17 @@ int main() {
         correcto = 1;
         operacion = ' ';
         // checkear si es imprimir
-        if (strlen(buffer) >= 11 && buffer[0] == 'i' && buffer[1] == 'm' && buffer[2] == 'p' && buffer[3] == 'r' && buffer[4] == 'i' && buffer[5] == 'm' && buffer[6] == 'i' && buffer[7] == 'r' && buffer[8] == ' ' && isalpha(buffer[9]) != 0) {
-            if (isdigit(buffer[10]) != 0 && buffer[11] == '\0') {
-                conjuntoFinal[0] = buffer[9];
-                conjuntoFinal[1] = buffer[10];
-                conjuntoFinal[2] = '\0';
-            } else if(buffer[10] == '\0') {
-                conjuntoFinal[0] = buffer[9];
-                conjuntoFinal[1] = '\0';
-            } else
+        if (buffer[0] == 'i' && buffer[1] == 'm' && buffer[2] == 'p' && buffer[3] == 'r' && buffer[4] == 'i' && buffer[5] == 'm' && buffer[6] == 'i' && buffer[7] == 'r' && buffer[8] == ' ') {
+            obtenerUltimoConjunto(buffer, conjuntoDestino, 9);
+            if (conjuntoDestino[0] != '\0')
+                printf("imprimir conjunto %s\n", conjuntoDestino);
+            else
                 correcto = 0;
-            if (correcto == 1)
-                printf("imprimir conjunto %s\n", conjuntoFinal);
         // checkear inicio hasta "A = "
-        } else if (strlen(buffer) >= 7 && isalpha(buffer[0]) != 0) {
-            // guarda conjunto final
-            if (isdigit(buffer[1]) != 0 && buffer[2] == ' ' && buffer[3] == '=' && buffer[4] == ' ') {
-                conjuntoFinal[0] = buffer[0];
-                conjuntoFinal[1] = buffer[1];
-                conjuntoFinal[2] = '\0';
-                pos = 5;
-            } else if (buffer[1] == ' ' && buffer[2] == '=' && buffer[3] == ' ') {
-                conjuntoFinal[0] = buffer[0];
-                conjuntoFinal[1] = '\0';
-                pos = 4;
-            } else
+        } else { 
+            pos = obtenerConjuntoDestino(buffer, conjuntoDestino, pos);
+            if (conjuntoDestino[0] == '\0')
                 correcto = 0;
-            // si correcto hasta ahora
             if (correcto == 1) {
                 // checkear si es crear conjunto "A = {"
                 if (buffer[pos] == '{') {
@@ -150,75 +181,53 @@ int main() {
                         } else
                             correcto = 0;
                     }
-                // checkear si complemento
-                } else if (isalpha(buffer[pos]) != 0) {
-                    // guardo conjuntoUno
-                    if (isdigit(buffer[pos + 1]) != 0 && buffer[pos + 2] == ' ') {
-                        conjuntoUno[0] = buffer[pos];
-                        conjuntoUno[1] = buffer[pos + 1];
-                        conjuntoUno[2] = '\0';
-                        pos += 3;
-                    } else if (buffer[pos + 1] == ' ') {
-                        conjuntoUno[0] = buffer[pos];
-                        conjuntoUno[1] = '\0';
-                        pos += 2;
-                    } else
+                // checkear si la operacion es complemento
+                } else if (buffer[pos] == '~') {
+                    // obtiene el conjunto de la operacion
+                    obtenerUltimoConjunto(buffer, conjuntoDos, pos + 1);
+                    if (conjuntoDos[0] != '\0')
+                        operacion = buffer[pos];
+                    else
+                        correcto = 0;
+                } else {
+                    // obtiene el primer conjunto de la operacion
+                    pos = obtenerPrimerConjunto(buffer, conjuntoUno, pos);
+                    if (conjuntoUno[0] == '\0')
                         correcto = 0;
                     if (correcto == 1) {
-                        // chechear si es una de las operaciones | & -
+                        // chechea si es una operacion
                         if ((buffer[pos] == '|' || buffer[pos] == '&' || buffer[pos] == '-') && buffer[pos + 1] == ' ') {
-                            if (isalpha(buffer[pos + 2]) != 0) {
-                                // guardo conjuntoDos y operacion
-                                if (isdigit(buffer[pos + 3]) != 0 && buffer[pos + 4] == '\0') {
-                                    conjuntoDos[0] = buffer[pos + 2];
-                                    conjuntoDos[1] = buffer[pos + 3];
-                                    conjuntoDos[2] = '\0';
-                                    operacion = buffer[pos];
-                                } else if (buffer[pos + 3] == '\0') {
-                                    conjuntoDos[0] = buffer[pos + 2];
-                                    conjuntoDos[1] = '\0';
-                                    operacion = buffer[pos];
-                                } else
-                                    correcto = 0;
-                            } else
+                            // obtiene el segundo conjunto de la operacion
+                            obtenerUltimoConjunto(buffer, conjuntoDos, pos + 2);
+                            if (conjuntoDos[0] != '\0')
+                                operacion = buffer[pos];
+                            else
                                 correcto = 0;
                         } else
                             correcto = 0;
                     }
-                } else if (buffer[pos] == '~') {
-                    if (isalpha(buffer[pos + 1]) != 0) {
-                        // guardo conjuntoUno y operacion
-                        if (isdigit(buffer[pos + 2]) != 0 && buffer[pos + 3] == '\0') {
-                            conjuntoUno[0] = buffer[pos + 1];
-                            conjuntoUno[1] = buffer[pos + 2];
-                            conjuntoUno[2] = '\0';
-                            operacion = buffer[pos];
-                        } else if (buffer[pos + 2] == '\0') {
-                            conjuntoUno[0] = buffer[pos + 1];
-                            conjuntoUno[1] = '\0';
-                            operacion = buffer[pos];
-                        } else
-                            correcto = 0;
+                    if (conjuntoUno[0] != '\0') {
                     } else
                         correcto = 0;
-                // checkeo si union, interseccion o resta "A = B "
-                } else
-                    correcto = 0;
+                }
                 switch (operacion) {
                     case '|':
                         // union de conjuntos
-                        printf("Union %s, %s, %s\n", conjuntoFinal, conjuntoUno, conjuntoDos);
+                        printf("Union %s, %s, %s\n", conjuntoDestino, conjuntoUno, conjuntoDos);
                         break;
                     case '&':
                         // interseccion de conjuntos
-                        printf("Interseccion %s, %s, %s\n", conjuntoFinal, conjuntoUno, conjuntoDos);
+                        printf("Interseccion %s, %s, %s\n", conjuntoDestino, conjuntoUno, conjuntoDos);
                         break;
                     case '-':
                         // resta de conjuntos
-                        printf("Resta %s, %s, %s\n", conjuntoFinal, conjuntoUno, conjuntoDos);
+                        printf("Resta %s, %s, %s\n", conjuntoDestino, conjuntoUno, conjuntoDos);
+                        break;
+                    case '~':
+                        // complemento de conjunto
+                        printf("Complemento %s, %s\n", conjuntoDestino, conjuntoDos);
                         break;
                     default:
-                        printf("defecto\n");
                         break;
                 }
             }
