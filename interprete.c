@@ -1,6 +1,6 @@
 #include "./ITree/itree.h"
 #include "./Interval/interval.h"
-//#include "./TablaHash/tablahash.h"
+#include "./TablaHash/tablahash.h"
 #include <ctype.h>
 #include <stdint.h>
 #define MAX_LINEA 100
@@ -121,6 +121,7 @@ int main() {
     //TablaHash *th = tablahash_crear(26, hash);
     Interval *aux = NULL;
     ITree arbol = NULL;
+    TablaHash *th = tablahash_crear(260, hash); 
     int pos, correcto;
     buffer[0] = '\0';
     printf("Crear conjunto por extension: 'A = {-2, 5, 7, -9}'\n");
@@ -137,16 +138,20 @@ int main() {
         // checkear si es imprimir
         if (buffer[0] == 'i' && buffer[1] == 'm' && buffer[2] == 'p' && buffer[3] == 'r' && buffer[4] == 'i' && buffer[5] == 'm' && buffer[6] == 'i' && buffer[7] == 'r' && buffer[8] == ' ') {
             obtenerUltimoConjunto(buffer, conjuntoDestino, 9);
-            if (conjuntoDestino[0] != '\0')
+            if (conjuntoDestino[0] != '\0') {
                 printf("imprimir conjunto %s\n", conjuntoDestino);
-            else
+                arbol = tablahash_buscar(th, &conjuntoDestino[0]);
+                printf("arbol");
+                itree_imprimir(arbol);
+                printf(";\n");
+            } else
                 correcto = 0;
         // checkear inicio hasta "A = "
-        } else { 
+        } else {
             pos = obtenerConjuntoDestino(buffer, conjuntoDestino, pos);
             if (conjuntoDestino[0] == '\0')
                 correcto = 0;
-            if (correcto == 1) {
+            else {
                 // checkear si es crear conjunto "A = {"
                 if (buffer[pos] == '{') {
                     // checkear si es crear por compresion "A = {x: "
@@ -156,12 +161,7 @@ int main() {
                         if (aux) {
                             if (interval_valido(aux)) {
                                 arbol = itree_insertar(arbol, aux);
-                                itree_imprimir(arbol); // insertar en tablahash
-                                printf("\n"); // eventualmente borrar
-                                // eventualmente borrar creo
-                                itree_destruir(arbol);
-                                arbol = itree_crear();
-                                // hasta aca
+                                tablahash_insertar(th, &conjuntoDestino[0], arbol);
                             } else {
                                 // eventualmente borrar creo
                                 interval_destruir(aux);
@@ -174,10 +174,7 @@ int main() {
                     } else {
                         printf("Creo conjunto por extension\n");
                         if (leer_extension(buffer, pos + 1, &arbol) == 1) {
-                            itree_imprimir(arbol);
-                            printf("\n");
-                            itree_destruir(arbol);
-                            arbol = itree_crear();
+                            tablahash_insertar(th, &conjuntoDestino[0], arbol);
                         } else
                             correcto = 0;
                     }

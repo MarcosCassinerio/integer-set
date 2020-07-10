@@ -1,6 +1,25 @@
 #include "tablahash.h"
+#include "../ITree/itree.h"
 #include <assert.h>
 #include <stdlib.h>
+
+/**
+ * Casillas en la que almacenaremos los datos de la tabla hash.
+ */
+struct _CasillaHash{
+  void* clave;
+  void* dato;
+};
+
+/**
+ * Estructura principal que representa la tabla hash.
+ */
+struct _TablaHash{
+  CasillaHash* tabla;
+  unsigned numElems;
+  unsigned capacidad;
+  FuncionHash hash;
+};
 
 /**
  * Crea una nueva tabla Hash vacía, con la capacidad dada.

@@ -6,23 +6,9 @@
  */
 typedef unsigned (*FuncionHash)(void* clave);
 
-/**
- * Casillas en la que almacenaremos los datos de la tabla hash.
- */
-typedef struct {
-  void* clave;
-  void* dato;
-} CasillaHash;
+typedef struct _CasillaHash CasillaHash;
 
-/**
- * Estructura principal que representa la tabla hash.
- */
-typedef struct {
-  CasillaHash* tabla;
-  unsigned numElems;
-  unsigned capacidad;
-  FuncionHash hash;
-} TablaHash;
+typedef struct _TablaHash TablaHash;
 
 /**
  * Crea una nueva tabla Hash vacía, con la capacidad dada.
