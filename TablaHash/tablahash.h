@@ -4,7 +4,7 @@
 /**
  * Tipo de las funciones hash a ser consideradas por las tablas hash.
  */
-typedef unsigned (*FuncionHash)(void* clave);
+typedef int (*FuncionHash)(char clave);
 
 typedef struct _CasillaHash CasillaHash;
 
@@ -18,18 +18,18 @@ TablaHash* tablahash_crear(unsigned capacidad, FuncionHash fun);
 /**
  * Inserta el dato en la tabla, asociado a la clave dada.
  */
-void tablahash_insertar(TablaHash* tabla, void* clave, void* dato);
+void tablahash_insertar(TablaHash* tabla, char clave, void* dato);
 
 /**
  * Busca un elemento dado en la tabla, y retorna un puntero al mismo.
  * En caso de no existir, se retorna un puntero nulo.
  */
-void* tablahash_buscar(TablaHash* tabla, void* clave);
+void* tablahash_buscar(TablaHash* tabla, char clave);
 
 /**
  * Elimina un elemento de la tabla.
  */
-void tablahash_eliminar(TablaHash* tabla, void* clave);
+void tablahash_eliminar(TablaHash* tabla, char clave);
 
 /**
  * Destruye la tabla.

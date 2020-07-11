@@ -7,7 +7,7 @@
  * Casillas en la que almacenaremos los datos de la tabla hash.
  */
 struct _CasillaHash{
-  void* clave;
+  char clave;
   void* dato;
 };
 
@@ -34,7 +34,7 @@ TablaHash* tablahash_crear(unsigned capacidad, FuncionHash hash) {
 
   // Inicializamos las casillas con datos nulos.
   for (unsigned idx = 0; idx < capacidad; ++idx) {
-    tabla->tabla[idx].clave = NULL;
+    tabla->tabla[idx].clave = ' ';
     tabla->tabla[idx].dato = NULL;
   }
 
@@ -44,25 +44,31 @@ TablaHash* tablahash_crear(unsigned capacidad, FuncionHash hash) {
 /**
  * Inserta el dato en la tabla, asociado a la clave dada.
  */
-void tablahash_insertar(TablaHash* tabla, void* clave, void* dato) {
+void tablahash_insertar(TablaHash* tabla, char clave, void* dato) {
   // Calculamos la posición de la clave dada, de acuerdo a la función hash.
   unsigned idx = tabla->hash(clave);
   idx = idx % tabla->capacidad;
 
   // Si el lugar estaba vacío, incrementamos el número de elementos.
-  if (tabla->tabla[idx].clave == NULL)
+  if (tabla->tabla[idx].clave == ' ')
     tabla->numElems++;
 
   // Almacenamos los datos ingresados.
   tabla->tabla[idx].clave = clave;
   tabla->tabla[idx].dato = dato;
+
+  for (int x = 0; x < tabla->capacidad; ++x) {
+    printf("clave: %c, arbol: ", tabla->tabla[x].clave);
+    itree_imprimir(tabla->tabla[x].dato);
+    printf("\n");
+  }
 }
 
 /**
  * Busca un elemento dado en la tabla, y retorna un puntero al mismo.
  * En caso de no existir, se retorna un puntero nulo.
  */
-void* tablahash_buscar(TablaHash* tabla, void* clave) {
+void* tablahash_buscar(TablaHash* tabla, char clave) {
   // Calculamos la posición de la clave dada, de acuerdo a la función hash.
   unsigned idx = tabla->hash(clave);
   idx = idx % tabla->capacidad;
@@ -77,17 +83,17 @@ void* tablahash_buscar(TablaHash* tabla, void* clave) {
 /**
  * Elimina un elemento de la tabla.
  */
-void tablahash_eliminar(TablaHash* tabla, void* clave) {
+void tablahash_eliminar(TablaHash* tabla, char clave) {
   // Calculamos la posición de la clave dada, de acuerdo a la función hash.
   unsigned idx = tabla->hash(clave);
   idx = idx % tabla->capacidad;
 
   // Si el lugar estaba ocupado, decrementamos el número de elementos.
-  if (tabla->tabla[idx].clave != NULL)
+  if (tabla->tabla[idx].clave != ' ')
     tabla->numElems--;
 
   // Vaciamos la casilla.
-  tabla->tabla[idx].clave = NULL;
+  tabla->tabla[idx].clave = ' ';
   tabla->tabla[idx].dato = NULL;
 }
 

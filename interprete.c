@@ -5,9 +5,8 @@
 #include <stdint.h>
 #define MAX_LINEA 100
 
-unsigned hash(void* clave) {
-    int* p = clave;
-    return *p;
+int hash(char clave) {
+    return clave;
 }
 
 /*
@@ -121,7 +120,7 @@ int main() {
     //TablaHash *th = tablahash_crear(26, hash);
     Interval *aux = NULL;
     ITree arbol = NULL;
-    TablaHash *th = tablahash_crear(260, hash); 
+    TablaHash *th = tablahash_crear(26, hash); 
     int pos, correcto;
     buffer[0] = '\0';
     printf("Crear conjunto por extension: 'A = {-2, 5, 7, -9}'\n");
@@ -139,11 +138,11 @@ int main() {
         if (buffer[0] == 'i' && buffer[1] == 'm' && buffer[2] == 'p' && buffer[3] == 'r' && buffer[4] == 'i' && buffer[5] == 'm' && buffer[6] == 'i' && buffer[7] == 'r' && buffer[8] == ' ') {
             obtenerUltimoConjunto(buffer, conjuntoDestino, 9);
             if (conjuntoDestino[0] != '\0') {
-                printf("imprimir conjunto %s\n", conjuntoDestino);
-                arbol = tablahash_buscar(th, &conjuntoDestino[0]);
+                printf("imprimir conjunto %c\n", conjuntoDestino[0]);
+                arbol = tablahash_buscar(th, conjuntoDestino[0]);
                 printf("arbol");
                 itree_imprimir(arbol);
-                printf(";\n");
+                printf("\n");
             } else
                 correcto = 0;
         // checkear inicio hasta "A = "
@@ -161,7 +160,7 @@ int main() {
                         if (aux) {
                             if (interval_valido(aux)) {
                                 arbol = itree_insertar(arbol, aux);
-                                tablahash_insertar(th, &conjuntoDestino[0], arbol);
+                                tablahash_insertar(th, conjuntoDestino[0], arbol);
                             } else {
                                 // eventualmente borrar creo
                                 interval_destruir(aux);
@@ -174,7 +173,7 @@ int main() {
                     } else {
                         printf("Creo conjunto por extension\n");
                         if (leer_extension(buffer, pos + 1, &arbol) == 1) {
-                            tablahash_insertar(th, &conjuntoDestino[0], arbol);
+                            tablahash_insertar(th, conjuntoDestino[0], arbol);
                         } else
                             correcto = 0;
                     }
