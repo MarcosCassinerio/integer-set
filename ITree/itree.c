@@ -183,8 +183,10 @@ void itree_destruir(ITree arbol) {
 
 ITree itree_insertar(ITree arbol, Interval *interval) {
   Interval *aux = NULL;
-  if (!interval_valido(interval))
+  if (!interval_valido(interval)) {
+    printf("  Intervalo invalido\n");
     return arbol;
+  }
   if (arbol) {
     if (interval_extremo_izq(interval) == interval_extremo_izq(arbol->interval)){
       aux = interval_concat(interval, arbol->interval);

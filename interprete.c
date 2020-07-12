@@ -118,8 +118,8 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
 int main() {
     char buffer[MAX_LINEA], conjuntoDestino[3], conjuntoUno[3], conjuntoDos[3], nombreInterval, operacion;
     //TablaHash *th = tablahash_crear(26, hash);
-    Interval *aux = NULL;
-    ITree arbolDestino = NULL, arbolUno = NULL, arbolDos = NULL, arbolAux = NULL;
+    Interval *aux;
+    ITree arbolDestino, arbolUno, arbolDos, arbolAux;
     TablaHash *th = tablahash_crear(hash); 
     int pos, correcto;
     buffer[0] = '\0';
@@ -134,6 +134,10 @@ int main() {
     while (strcmp(leer_cadena(buffer), "salir\0")) {
         correcto = 1;
         operacion = ' ';
+        arbolDestino = itree_crear();
+        arbolUno = itree_crear();
+        arbolDos = itree_crear();
+        arbolAux = itree_crear();
         // checkear si es imprimir
         if (buffer[0] == 'i' && buffer[1] == 'm' && buffer[2] == 'p' && buffer[3] == 'r' && buffer[4] == 'i' && buffer[5] == 'm' && buffer[6] == 'i' && buffer[7] == 'r' && buffer[8] == ' ') {
             obtenerUltimoConjunto(buffer, conjuntoDestino, 9);
@@ -145,7 +149,6 @@ int main() {
                 }
                 itree_imprimir(arbolDestino);
                 printf("\n");
-                arbolDestino = itree_crear();
             } else
                 correcto = 0;
         // checkear inicio hasta "A = "
@@ -167,12 +170,10 @@ int main() {
                                 } else {
                                     tablahash_insertar(th, toupper(conjuntoDestino[0]), '0', arbolDestino);
                                 }
-                                arbolDestino = itree_crear();
                             } else {
-                                // eventualmente borrar creo
+                                printf("  Intervalo invalido\n");
                                 interval_destruir(aux);
                                 aux = NULL;
-                                // hasta aca
                             }
                         } else
                             correcto = 0;
@@ -184,7 +185,6 @@ int main() {
                             } else {
                                 tablahash_insertar(th, toupper(conjuntoDestino[0]), '0', arbolDestino);
                             }
-                            arbolDestino = itree_crear();
                         } else
                             correcto = 0;
                     }
@@ -230,7 +230,6 @@ int main() {
                     }
                     if (operacion == '~') {
                         arbolAux = itree_complemento(arbolDos);
-                        itree_destruir(arbolDestino);
                         arbolDestino = arbolAux;
                         if (conjuntoDestino[1] != '\0') {
                             tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1], arbolDestino);

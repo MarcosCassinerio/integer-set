@@ -3,19 +3,23 @@
 /**
  * Casillas en la que almacenaremos los datos de la tabla hash.
  */
-struct _CasillaHash{
+struct _CasillaHash {
   char clave;
-  void* dato;
+  void *dato;
 };
 
 /**
  * Estructura principal que representa la tabla hash.
  */
-struct _TablaHash{
-  CasillaHash* tabla;
+struct _TablaHash {
+  CasillaHash *tabla;
   unsigned numElems;
   unsigned capacidad;
   FuncionHash hash;
+};
+
+struct _Contenedor {
+  void *dato;
 };
 
 /**
@@ -76,8 +80,9 @@ void tablahash_insertar(TablaHash* tabla, char clave1, char clave2, void* dato) 
  * Busca un elemento dado en la tabla, y retorna un puntero al mismo.
  * En caso de no existir, se retorna un puntero nulo.
  */
-void* tablahash_buscar(TablaHash* tabla, char clave1, char clave2) {
+Contenedor *tablahash_buscar(TablaHash* tabla, char clave1, char clave2) {
   TablaHash *tabla2 = NULL;
+  Contenedor *contenedor = NULL;
   // Calculamos la posición de la clave dada, de acuerdo a la función hash.
   unsigned idx = tabla->hash(clave1);
   idx = idx % tabla->capacidad;
@@ -94,7 +99,10 @@ void* tablahash_buscar(TablaHash* tabla, char clave1, char clave2) {
   if (tabla2->tabla[idy].clave != clave2)
     return NULL;
 
-  return tabla2->tabla[idy].dato;
+  contenedor = malloc(sizeof(Contenedor));
+  contenedor->dato = tabla2->tabla[idy].dato;
+  
+  return contenedor;
 }
 
 /**

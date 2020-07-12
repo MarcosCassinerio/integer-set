@@ -1,7 +1,6 @@
 #ifndef __TABLAHASH_H__
 #define __TABLAHASH_H__
 
-#include "../ITree/itree.h"
 #include <assert.h>
 #define capacidadTH1 26
 #define capacidadTH2 10
@@ -14,6 +13,8 @@ typedef int (*FuncionHash)(char clave);
 typedef struct _CasillaHash CasillaHash;
 
 typedef struct _TablaHash TablaHash;
+
+typedef struct _Contenedor Contenedor;
 
 /**
  * Crea una nueva tabla Hash vacía, con la capacidad dada.
