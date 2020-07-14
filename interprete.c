@@ -30,13 +30,12 @@ char *leer_cadena(char *string) {
 int leer_extension(char *string, int posicion, ITree *arbol) {
     char *resto;
     int numero, correcto = 1;
-    Interval *aux = NULL;
     string += posicion;
     while (correcto == 1 && *string != '}') {
         if (isdigit(*string) != 0 || *string == '-') {
             numero = strtol(string, &resto, 10);
             *arbol = itree_insertar(*arbol, interval_crear(numero, numero));
-            if (*resto == ',' && *(resto + 1) == ' ')
+            if (*resto == ',' && *(resto + 1) == ' ' && (*(resto + 2) == '-' || isdigit(*(resto + 2)) != 0))
                 string = resto + 2;
             else
                 string = resto;
@@ -116,7 +115,7 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
 }
 
 int main() {
-    char buffer[MAX_LINEA], conjuntoDestino[3], conjuntoUno[3], conjuntoDos[3], nombreInterval, operacion;
+    char buffer[MAX_LINEA], conjuntoDestino[3], conjuntoUno[3], conjuntoDos[3], operacion;
     //TablaHash *th = tablahash_crear(26, hash);
     Interval *aux;
     ITree arbolDestino, arbolUno, arbolDos, arbolAux;
@@ -147,7 +146,7 @@ int main() {
                 if (contenedor)
                     itree_imprimir(contenedor_obtener_dato(contenedor));
                 else
-                    printf("No se encontro el conjunto %s\n", conjuntoDestino);
+                    printf("No se encontro el conjunto %s", conjuntoDestino);
                 printf("\n");
             } else
                 correcto = 0;
@@ -274,8 +273,6 @@ int main() {
                                     tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], itree_restar(arbolUno, arbolDos));
                                 }
                                 itree_destruir(&arbolDestino);
-                                break;
-                            default:
                                 break;
                         }
                     }
