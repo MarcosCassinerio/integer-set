@@ -34,7 +34,7 @@ Interval *interval_concat(Interval *interval1, Interval *interval2) {
       int extremo_der = interval_extremo_der(interval1) > interval_extremo_der(interval2) ? interval_extremo_der(interval1) : interval_extremo_der(interval2);
       return interval_crear(extremo_izq, extremo_der);
   }
-  if (interval_extremo_der(interval1) == interval_extremo_izq(interval2))
+  if (interval_extremo_der(interval1) + 1 == interval_extremo_izq(interval2))
       return interval_crear(interval_extremo_izq(interval1), interval_extremo_der(interval2));
   return NULL;
 }

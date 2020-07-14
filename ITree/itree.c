@@ -146,6 +146,9 @@ Interval *itree_complemento_aux(ITree *complemento, ITree arbol, Interval *inter
     interval = interval_crear(INT_MIN, INT_MIN);
   return interval;
 }
+//          6
+//    4           8
+//  3   5       7   9
 
 Interval *itree_recorrer_dfs(ITree arbol, Interval *interval) {
   Interval *aux = NULL;
@@ -172,12 +175,13 @@ ITree itree_crear() {
   return NULL;
 }
 
-void itree_destruir(ITree arbol) {
-  if (arbol) {
-    itree_destruir(arbol->izq);
-    itree_destruir(arbol->der);
-    interval_destruir(arbol->interval);
-    free(arbol);
+void itree_destruir(ITree *arbol) {
+  if (arbol && *arbol) {
+    itree_destruir(&(*arbol)->izq);
+    itree_destruir(&(*arbol)->der);
+    interval_destruir((*arbol)->interval);
+    free(*arbol);
+    *arbol = NULL;
   }
 }
 

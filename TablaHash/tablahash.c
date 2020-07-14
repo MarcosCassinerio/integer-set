@@ -101,7 +101,7 @@ Contenedor *tablahash_buscar(TablaHash* tabla, char clave1, char clave2) {
 
   contenedor = malloc(sizeof(Contenedor));
   contenedor->dato = tabla2->tabla[idy].dato;
-  
+
   return contenedor;
 }
 
@@ -143,4 +143,11 @@ void tablahash_eliminar(TablaHash* tabla, char clave1, char clave2) {
 void tablahash_destruir(TablaHash* tabla) {
   free(tabla->tabla);
   free(tabla);
+}
+
+void *contenedor_obtener_dato(Contenedor *contenedor) {
+  if (contenedor) {
+    return contenedor->dato;
+  }
+  return NULL;
 }

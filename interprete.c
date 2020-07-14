@@ -46,7 +46,7 @@ int leer_extension(char *string, int posicion, ITree *arbol) {
     if (*(string + 1) != '\0')
         correcto = 0;
     if (correcto == 0)
-        itree_destruir(*arbol);
+        itree_destruir(&*arbol);
     return correcto;
 }
 
@@ -121,6 +121,7 @@ int main() {
     Interval *aux;
     ITree arbolDestino, arbolUno, arbolDos, arbolAux;
     TablaHash *th = tablahash_crear(hash); 
+    Contenedor *contenedor = NULL;
     int pos, correcto;
     buffer[0] = '\0';
     printf("Crear conjunto por extension: 'A = {-2, 5, 7, -9}'\n");
@@ -142,12 +143,11 @@ int main() {
         if (buffer[0] == 'i' && buffer[1] == 'm' && buffer[2] == 'p' && buffer[3] == 'r' && buffer[4] == 'i' && buffer[5] == 'm' && buffer[6] == 'i' && buffer[7] == 'r' && buffer[8] == ' ') {
             obtenerUltimoConjunto(buffer, conjuntoDestino, 9);
             if (conjuntoDestino[0] != '\0') {
-                if (conjuntoDestino[1] != '\0') {
-                    arbolDestino = tablahash_buscar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1]);
-                } else {
-                    arbolDestino = tablahash_buscar(th, toupper(conjuntoDestino[0]), '0');
-                }
-                itree_imprimir(arbolDestino);
+                contenedor = tablahash_buscar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1]);
+                if (contenedor)
+                    itree_imprimir(contenedor_obtener_dato(contenedor));
+                else
+                    printf("No se encontro el conjunto %s\n", conjuntoDestino);
                 printf("\n");
             } else
                 correcto = 0;
@@ -165,13 +165,9 @@ int main() {
                         if (aux) {
                             if (interval_valido(aux)) {
                                 arbolDestino = itree_insertar(arbolDestino, aux);
-                                if (conjuntoDestino[1] != '\0') {
-                                    tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1], arbolDestino);
-                                } else {
-                                    tablahash_insertar(th, toupper(conjuntoDestino[0]), '0', arbolDestino);
-                                }
+                                tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], arbolDestino);
                             } else {
-                                printf("  Intervalo invalido\n");
+                                printf("Intervalo invalido\n");
                                 interval_destruir(aux);
                                 aux = NULL;
                             }
@@ -179,20 +175,16 @@ int main() {
                             correcto = 0;
                     // en caso contrario debe ser por extension "A = {"
                     } else {
-                        if (leer_extension(buffer, pos + 1, &arbolDestino) == 1) {
-                            if (conjuntoDestino[1] != '\0') {
-                                tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1], arbolDestino);
-                            } else {
-                                tablahash_insertar(th, toupper(conjuntoDestino[0]), '0', arbolDestino);
-                            }
-                        } else
+                        if (leer_extension(buffer, pos + 1, &arbolDestino) == 1)
+                            tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], arbolDestino);
+                        else
                             correcto = 0;
                     }
                 // checkear si la operacion es complemento
                 } else if (buffer[pos] == '~') {
                     // obtiene el conjunto de la operacion
-                    obtenerUltimoConjunto(buffer, conjuntoDos, pos + 1);
-                    if (conjuntoDos[0] != '\0')
+                    obtenerUltimoConjunto(buffer, conjuntoUno, pos + 1);
+                    if (conjuntoUno[0] != '\0')
                         operacion = buffer[pos];
                     else
                         correcto = 0;
@@ -213,47 +205,75 @@ int main() {
                         } else
                             correcto = 0;
                     }
-                    if (conjuntoUno[0] != '\0') {
-                    } else
-                        correcto = 0;
                 }
-                if (operacion) {
-                    if (conjuntoDestino[1] != '\0') {
-                        arbolDestino = tablahash_buscar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1]);
-                    } else {
-                        arbolDestino = tablahash_buscar(th, toupper(conjuntoDestino[0]), '0');
+                if (operacion != ' ') {
+                    contenedor = tablahash_buscar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1]);
+                    if (contenedor)
+                        arbolDestino = contenedor_obtener_dato(contenedor);
+                    else {
+                        operacion = ' ';
+                        printf("No se encontro el conjunto %s\n", conjuntoDestino);
                     }
-                    if (conjuntoDos[1] != '\0') {
-                        arbolDos = tablahash_buscar(th, toupper(conjuntoDos[0]), conjuntoDos[1]);
-                    } else {
-                        arbolDos = tablahash_buscar(th, toupper(conjuntoDos[0]), '0');
+                    contenedor = tablahash_buscar(th, toupper(conjuntoUno[0]), conjuntoUno[1] == '\0' ? '0' : conjuntoUno[1]);
+                    if (contenedor)
+                        arbolUno = contenedor_obtener_dato(contenedor);
+                    else {
+                        operacion = ' ';
+                        printf("No se encontro el conjunto %s\n", conjuntoUno);
                     }
                     if (operacion == '~') {
-                        arbolAux = itree_complemento(arbolDos);
-                        arbolDestino = arbolAux;
-                        if (conjuntoDestino[1] != '\0') {
-                            tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1], arbolDestino);
-                        } else {
-                            tablahash_insertar(th, toupper(conjuntoDestino[0]), '0', arbolDestino);
-                        }
+                        arbolAux = itree_complemento(arbolUno);
+                        itree_destruir(&arbolDestino);
+                        tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], arbolAux);
                     } else {
-                        if (conjuntoDos[1] != '\0') {
-                            arbolDos = tablahash_buscar(th, toupper(conjuntoUno[0]), conjuntoUno[1]);
-                        } else {
-                            arbolDos = tablahash_buscar(th, toupper(conjuntoUno[0]), '0');
+                        contenedor = tablahash_buscar(th, toupper(conjuntoDos[0]), conjuntoDos[1] == '\0' ? '0' : conjuntoDos[1]);
+                        if (contenedor)
+                            arbolDos = contenedor_obtener_dato(contenedor);
+                        else {
+                            operacion = ' ';
+                            printf("No se encontro el conjunto %s\n", conjuntoDos);
                         }
                         switch (operacion) {
                             case '|':
-                                printf("Union %s, %s, %s\n", conjuntoDestino, conjuntoUno, conjuntoDos);
-                                if (arbolDestino == arbolUno || arbolDestino == arbolDos) {}  
+                                // union de conjuntos
+                                if (arbolDestino == arbolUno || arbolDestino == arbolDos) {
+                                    if (arbolUno != arbolDos) {
+                                        arbolAux = arbolDestino == arbolUno ? arbolDos : arbolUno;
+                                        itree_unir(&arbolDestino, arbolAux);
+                                        tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], arbolDestino);
+                                    }
+                                } else {
+                                    itree_destruir(&arbolDestino);
+                                    itree_unir(&arbolDestino, arbolUno);
+                                    itree_unir(&arbolDestino, arbolDos);
+                                    tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], arbolDestino);
+                                }
                                 break;
                             case '&':
                                 // interseccion de conjuntos
-                                printf("Interseccion %s, %s, %s\n", conjuntoDestino, conjuntoUno, conjuntoDos);
+                                if (arbolDestino == arbolUno || arbolDestino == arbolDos) {
+                                    if (arbolUno != arbolDos) {
+                                        if (arbolAux == arbolUno)
+                                            itree_intersecar(&arbolAux, arbolDestino, arbolDos);
+                                        else
+                                            itree_intersecar(&arbolAux, arbolDestino, arbolUno);
+                                        itree_destruir(&arbolDestino);
+                                        tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], arbolAux);
+                                    }
+                                } else {
+                                    itree_destruir(&arbolDestino);
+                                    itree_intersecar(&arbolDestino, arbolUno, arbolDos);
+                                    tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], arbolDestino);
+                                }
                                 break;
                             case '-':
                                 // resta de conjuntos
-                                printf("Resta %s, %s, %s\n", conjuntoDestino, conjuntoUno, conjuntoDos);
+                                if (arbolUno == arbolDos)
+                                    tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], NULL);
+                                else {
+                                    tablahash_insertar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1], itree_restar(arbolUno, arbolDos));
+                                }
+                                itree_destruir(&arbolDestino);
                                 break;
                             default:
                                 break;

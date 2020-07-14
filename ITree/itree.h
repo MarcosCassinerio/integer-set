@@ -21,7 +21,7 @@ ITree itree_crear();
     Dado un arbol y una funcion para destruir intervals, borra el arbol
     liberando toda la memoria.
 */
-void itree_destruir(ITree arbol);
+void itree_destruir(ITree *arbol);
 
 /*
     itree_insertar: ITree Interval* -> ITree
