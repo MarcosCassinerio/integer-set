@@ -146,9 +146,6 @@ Interval *itree_complemento_aux(ITree *complemento, ITree arbol, Interval *inter
     interval = interval_crear(INT_MIN, INT_MIN);
   return interval;
 }
-//          6
-//    4           8
-//  3   5       7   9
 
 Interval *itree_recorrer_dfs(ITree arbol, Interval *interval) {
   Interval *aux = NULL;
@@ -162,6 +159,7 @@ Interval *itree_recorrer_dfs(ITree arbol, Interval *interval) {
         interval = aux;
       else {
         interval_imprimir(interval);
+        printf(", ");
         interval_destruir(interval);
         interval = interval_crear(interval_extremo_izq(arbol->interval), interval_extremo_der(arbol->interval));
       }
@@ -227,7 +225,7 @@ void itree_intersecar(ITree *interseccion, ITree arbol1, ITree arbol2) {
 
 ITree itree_restar(ITree arbol1, ITree arbol2) {
   ITree resta = NULL;
-  itree_intersecar(&resta, itree_complemento(arbol1), arbol2);
+  itree_intersecar(&resta, arbol1, itree_complemento(arbol2));
   return resta;
 }
 

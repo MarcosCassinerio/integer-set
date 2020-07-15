@@ -50,13 +50,19 @@ int leer_extension(char *string, int posicion, ITree *arbol) {
 }
 
 Interval *leer_compresion(char *string, int posicion, char nombreInterval) {
-    char *resto;
+    char *resto, aux1[10], aux2[10];
     int numero1, numero2;
     string += posicion;
     if (isdigit(*string) != 0 || *string == '-') {
         numero1 = strtol(string, &resto, 10);
     }
-    if (*resto == ' ' && *(resto + 1) == '<' && *(resto + 2) == '=' && *(resto + 3) == ' ' && *(resto + 4) == nombreInterval && *(resto + 5) == ' ' && *(resto + 6) == '<' && *(resto + 7) == '=' && *(resto + 8) == ' ' && (isdigit(*(resto + 9)) != 0 || *(resto + 9) == '-')) {
+    strcpy(aux1, " <= ");
+    aux1[4] = nombreInterval;
+    strcat(aux1, " <= ");
+    aux1[9] = '\0';
+    strncpy(aux2, resto, 9);
+    aux2[9] = '\0';
+    if (strcmp(aux1, aux2) == 0 && (isdigit(*(resto + 9)) != 0 || *(resto + 9) == '-')) {
         string = resto + 9;
         numero2 = strtol(string, &resto, 10);
     }
@@ -115,7 +121,7 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
 }
 
 int main() {
-    char buffer[MAX_LINEA], conjuntoDestino[3], conjuntoUno[3], conjuntoDos[3], operacion;
+    char buffer[MAX_LINEA], conjuntoDestino[3], conjuntoUno[3], conjuntoDos[3], operacion, stringAux[9];
     //TablaHash *th = tablahash_crear(26, hash);
     Interval *aux;
     ITree arbolDestino, arbolUno, arbolDos, arbolAux;
@@ -139,7 +145,9 @@ int main() {
         arbolDos = itree_crear();
         arbolAux = itree_crear();
         // checkear si es imprimir
-        if (buffer[0] == 'i' && buffer[1] == 'm' && buffer[2] == 'p' && buffer[3] == 'r' && buffer[4] == 'i' && buffer[5] == 'm' && buffer[6] == 'i' && buffer[7] == 'r' && buffer[8] == ' ') {
+        strncpy(stringAux, buffer, 9);
+        stringAux[9] = '\0';
+        if (strcmp(stringAux, "imprimir ") == 0) {
             obtenerUltimoConjunto(buffer, conjuntoDestino, 9);
             if (conjuntoDestino[0] != '\0') {
                 contenedor = tablahash_buscar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1]);
@@ -207,12 +215,7 @@ int main() {
                 }
                 if (operacion != ' ') {
                     contenedor = tablahash_buscar(th, toupper(conjuntoDestino[0]), conjuntoDestino[1] == '\0' ? '0' : conjuntoDestino[1]);
-                    if (contenedor)
-                        arbolDestino = contenedor_obtener_dato(contenedor);
-                    else {
-                        operacion = ' ';
-                        printf("No se encontro el conjunto %s\n", conjuntoDestino);
-                    }
+                    arbolDestino = contenedor_obtener_dato(contenedor);
                     contenedor = tablahash_buscar(th, toupper(conjuntoUno[0]), conjuntoUno[1] == '\0' ? '0' : conjuntoUno[1]);
                     if (contenedor)
                         arbolUno = contenedor_obtener_dato(contenedor);

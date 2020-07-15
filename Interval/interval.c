@@ -42,9 +42,9 @@ Interval *interval_concat(Interval *interval1, Interval *interval2) {
 void interval_imprimir(Interval *interval) {
   if (interval) {
     if (interval_extremo_izq(interval) == interval_extremo_der(interval))
-      printf(" %d ", interval_extremo_izq(interval));
+      printf("%d", interval_extremo_izq(interval));
     else
-      printf(" %d:%d ", interval_extremo_izq(interval), interval_extremo_der(interval));
+      printf("%d:%d", interval_extremo_izq(interval), interval_extremo_der(interval));
   }
 }
 
