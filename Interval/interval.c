@@ -64,10 +64,11 @@ Interval *interval_interseccion(Interval *interval1, Interval *interval2) {
 }
 
 int interval_comparar(Interval *interval1, Interval *interval2) {
-  if (interval_extremo_izq(interval1) > interval_extremo_izq(interval2))
-    return -1;
-  else if (interval_extremo_izq(interval1) < interval_extremo_izq(interval2))
-    return 1;
-  else
-    return 0;
+  return interval_extremo_izq(interval1) - interval_extremo_izq(interval2);
+}
+
+Interval *interval_copy(Interval *interval) {
+  if (!interval)
+    return NULL;
+  return interval_crear(interval_extremo_izq(interval), interval_extremo_der(interval));
 }

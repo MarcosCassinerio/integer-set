@@ -55,4 +55,6 @@ Interval *interval_interseccion(Interval *interval1, Interval *interval2);
 
 int interval_comparar(Interval *interval1, Interval *interval2);
 
+Interval *interval_copy(Interval *interval);
+
 #endif                          /* __INTERVAL_H__ */
