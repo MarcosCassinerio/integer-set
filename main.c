@@ -51,12 +51,12 @@ int main() {
     printf("Complemento Uno: ");
     set_imprimir(set6);
 
-    set_destruir(set1);
-    set_destruir(set2);
-    set_destruir(set3);
-    set_destruir(set4);
-    set_destruir(set5);
-    set_destruir(set6);
+    set_destruir(&set1);
+    set_destruir(&set2);
+    set_destruir(&set3);
+    set_destruir(&set4);
+    set_destruir(&set5);
+    set_destruir(&set6);
 
     return 0;
 }

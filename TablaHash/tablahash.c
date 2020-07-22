@@ -15,6 +15,7 @@ struct _TablaHash {
   CasillaHash *tabla;
   unsigned numElems;
   unsigned capacidad;
+  unsigned profundidad;
   FuncionHash hash;
 };
 
@@ -22,19 +23,40 @@ struct _Contenedor {
   void *dato;
 };
 
-/**
- * Crea una nueva tabla Hash vacía, con la capacidad dada.
- */
-TablaHash *tablahash_crear(FuncionHash hash) {
+Contenedor *contenedor_crear(void *dato) {
+  Contenedor *contenedor = malloc(sizeof(Contenedor));
+  contenedor->dato = dato;
+  return contenedor;
+}
+
+void *contenedor_obtener_dato(Contenedor *contenedor) {
+  return contenedor ? contenedor->dato : NULL;
+}
+
+void contenedor_eliminar(Contenedor *contenedor, FuncionVisitante funcion) {
+  funcion(contenedor->dato);
+  free(contenedor);
+  contenedor = NULL;
+}
+
+TablaHash *tablahash_crear(FuncionHash hash, unsigned profundidad) {
   // Pedimos memoria para la estructura principal y las casillas.
   TablaHash *tabla = malloc(sizeof(TablaHash));
-  tabla->hash = hash;
-  tabla->capacidad = capacidadTH1;
-  tabla->tabla = malloc(sizeof(CasillaHash) * capacidadTH1);
+  unsigned idx = 0;
   tabla->numElems = 0;
+  tabla->profundidad = profundidad;
+  tabla->hash = hash;
+
+  if (profundidad == PROFUNDIDAD_MAXIMA) {
+    tabla->tabla = malloc(sizeof(CasillaHash) * capacidadTH1);
+    tabla->capacidad = capacidadTH1;
+  } else {
+    tabla->tabla = malloc(sizeof(CasillaHash) * capacidadTH2);
+    tabla->capacidad = capacidadTH2;
+  }
 
   // Inicializamos las casillas con datos nulos.
-  for (unsigned idx = 0; idx < capacidadTH1; ++idx) {
+  for (; idx < tabla->capacidad; ++idx) {
     tabla->tabla[idx].clave = ' ';
     tabla->tabla[idx].dato = NULL;
   }
@@ -42,112 +64,85 @@ TablaHash *tablahash_crear(FuncionHash hash) {
   return tabla;
 }
 
-/**
- * Inserta el dato en la tabla, asociado a la clave dada.
- */
-void tablahash_insertar(TablaHash* tabla, char clave1, char clave2, void* dato) {
-  TablaHash *tabla2 = NULL;
-  // Calculamos la posición de la clave dada, de acuerdo a la función hash.
-  unsigned idx = tabla->hash(clave1);
+void tablahash_insertar(TablaHash *tabla, char *clave, void *dato) {
+  TablaHash *tablaAux;
+  unsigned idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   idx = idx % tabla->capacidad;
-    
-  unsigned idy = tabla->hash(clave2);
-  idy = idy % tabla->capacidad;
 
-  // Si el lugar estaba vacío, incrementamos el número de elementos.
-  if (tabla->tabla[idx].clave == ' ') {
-    tabla->numElems++;
-
-    tabla2 = tablahash_crear(tabla->hash);
-
-    tabla2->tabla[idy].clave = clave2;
-    tabla2->tabla[idy].dato = dato;
-
-    tabla->tabla[idx].clave = clave1;
-    tabla->tabla[idx].dato = tabla2;
+  if (tabla->profundidad == 0) {
+    if (tabla->tabla[idx].clave == ' ') {
+      tabla->numElems ++;
+      tabla->tabla[idx].clave = clave[PROFUNDIDAD_MAXIMA - tabla->profundidad];
+    }
+    tabla->tabla[idx].dato = dato;
   } else {
-    tabla2 = tabla->tabla[idx].dato;
-
-    if (tabla2->tabla[idy].clave == ' ')
-      tabla2->numElems++;
-    
-    tabla2->tabla[idy].clave = clave2;
-    tabla2->tabla[idy].dato = dato;
+    if (tabla->tabla[idx].clave == ' ') {
+      tabla->numElems ++;
+      tablaAux = tablahash_crear(tabla->hash, tabla->profundidad - 1);
+      tabla->tabla[idx].clave = clave[PROFUNDIDAD_MAXIMA - tabla->profundidad];
+      tabla->tabla[idx].dato = tablaAux;
+    }
+    tablahash_insertar(tabla->tabla[idx].dato, clave, dato);
   }
 }
 
-/**
- * Busca un elemento dado en la tabla, y retorna un puntero al mismo.
- * En caso de no existir, se retorna un puntero nulo.
- */
-Contenedor *tablahash_buscar(TablaHash* tabla, char clave1, char clave2) {
-  TablaHash *tabla2 = NULL;
-  Contenedor *contenedor = NULL;
-  // Calculamos la posición de la clave dada, de acuerdo a la función hash.
-  unsigned idx = tabla->hash(clave1);
+Contenedor *tablahash_buscar(TablaHash *tabla, char *clave) {
+  unsigned idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   idx = idx % tabla->capacidad;
-    
-  unsigned idy = tabla->hash(clave2);
-  idy = idy % tabla->capacidad;
 
-  // Si el lugar esta vacío, retornamos un puntero nulo.
-  if (tabla->tabla[idx].clave != clave1)
-    return NULL;
-
-  tabla2 = tabla->tabla[idx].dato;
-
-  if (tabla2->tabla[idy].clave != clave2)
-    return NULL;
-
-  contenedor = malloc(sizeof(Contenedor));
-  contenedor->dato = tabla2->tabla[idy].dato;
-
-  return contenedor;
+  if (tabla->profundidad == 0) {
+    if (tabla->tabla[idx].clave != ' ')
+      return contenedor_crear(tabla->tabla[idx].dato);
+  } else {
+    if (tabla->tabla[idx].clave != ' ')
+      return tablahash_buscar(tabla->tabla[idx].dato, clave);
+  }
+  return NULL;
 }
 
-/**
- * Elimina un elemento de la tabla.
- */
-void tablahash_eliminar(TablaHash* tabla, char clave1, char clave2) {
-  TablaHash *tabla2 = NULL;
-  // Calculamos la posición de la clave dada, de acuerdo a la función hash.
-  unsigned idx = tabla->hash(clave1);
+void tablahash_eliminar(TablaHash *tabla, char *clave, FuncionVisitante funcion) {
+  TablaHash *tablaAux;
+  unsigned idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   idx = idx % tabla->capacidad;
-    
-  unsigned idy = tabla->hash(clave2);
-  idy = idy % tabla->capacidad;
 
-  // Si el lugar estaba ocupado, decrementamos el número de elementos.
-  if (tabla->tabla[idx].clave != ' ') {
-    tabla2 = tabla->tabla[idx].dato;
-    if (tabla2->tabla[idy].clave != ' ') {
-      tabla2->numElems--;
-      if (tabla2->numElems == 0) {
-        tablahash_destruir(tabla2);
-        
-        tabla->numElems--;
-
+  if (tabla->profundidad == 0) {
+    if (tabla->tabla[idx].clave != ' ') {
+      tabla->numElems --;
+      tabla->tabla[idx].clave = ' ';
+      contenedor_eliminar(tabla->tabla[idx].dato, funcion);
+    }
+  } else {
+    if (tabla->tabla[idx].clave != ' ') {
+      tablaAux = tabla->tabla[idx].dato;
+      tablahash_eliminar(tablaAux, clave, funcion);
+      if (tablaAux->numElems == 0) {
+        tabla->numElems --;
         tabla->tabla[idx].clave = ' ';
-        tabla->tabla[idx].dato = NULL;
-      } else {
-        tabla2->tabla[idy].clave = ' ';
-        tabla2->tabla[idy].dato = NULL;
+        tablahash_destruir(tablaAux);
       }
     }
   }
 }
 
-/**
- * Destruye la tabla.
- */
 void tablahash_destruir(TablaHash* tabla) {
   free(tabla->tabla);
   free(tabla);
+  tabla = NULL;
 }
 
-void *contenedor_obtener_dato(Contenedor *contenedor) {
-  if (contenedor) {
-    return contenedor->dato;
+void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {
+  unsigned idx = 0;
+
+  for (; idx < tabla->capacidad && tabla->numElems; idx --) {
+    if (tabla->tabla[idx].clave != ' ') {
+      tabla->numElems --;
+      tabla->tabla[idx].clave = ' ';
+      if (tabla->profundidad == 0)
+        contenedor_eliminar(tabla->tabla[idx].dato, funcion);
+      else
+        tablahash_destruir_entera(tabla, funcion);
+    }
   }
-  return NULL;
+
+  tablahash_destruir(tabla);
 }

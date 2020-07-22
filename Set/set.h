@@ -10,6 +10,8 @@ Set set_crear();
 
 void set_destruir(Set set);
 
+Set set_copia(Set set);
+
 Set set_insertar(Set set, Interval *interval);
 
 Set set_unir(Set set1, Set set2);
