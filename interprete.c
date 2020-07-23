@@ -77,7 +77,6 @@ int obtenerConjuntoDestino(char *string, char *conjunto, int pos) {
     int numero = 0, aux = 1, aux1, numeroAux, loga;
     char *resto, subString1[4], subString2[4];
     conjunto[0] = '\0';
-
     if (isalpha(*string) != 0) {
         conjunto[0] = *string;
         pos ++;
@@ -85,7 +84,7 @@ int obtenerConjuntoDestino(char *string, char *conjunto, int pos) {
         for (; *string == '0'; string ++, pos ++) {}
         numero = strtol(string, &resto, 10);
         string = resto;
-        if (0 <= numero && numero < 1000) {
+        if (0 <= numero && numero < pow(10, PROFUNDIDAD_MAXIMA - 1)) {
             if (!numero) {
                 for (; aux < PROFUNDIDAD_MAXIMA; aux ++)
                     conjunto[aux] = '0';
@@ -129,7 +128,7 @@ int obtenerPrimerConjunto(char *string, char *conjunto, int pos) {
         for (; *string == '0'; string ++, pos ++) {}
         numero = strtol(string, &resto, 10);
         string = resto;
-        if (0 <= numero && numero < 1000) {
+        if (0 <= numero && numero < pow(10, PROFUNDIDAD_MAXIMA - 1)) {
             if (!numero) {
                 for (; aux < PROFUNDIDAD_MAXIMA; aux ++)
                     conjunto[aux] = '0';
@@ -157,7 +156,7 @@ int obtenerPrimerConjunto(char *string, char *conjunto, int pos) {
 
     return pos;
 }
-//A230
+
 void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
     int numero = 0, aux = 1, aux1, numeroAux, loga;
     char *resto;
@@ -170,7 +169,7 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
         for (; *string == '0'; string ++) {}
         numero = strtol(string, &resto, 10);
         string = resto;
-        if (0 <= numero && numero < 1000) {
+        if (0 <= numero && numero < pow(10, PROFUNDIDAD_MAXIMA - 1)) {
             if (!numero) {
                 for (; aux < PROFUNDIDAD_MAXIMA; aux ++)
                     conjunto[aux] = '0';
@@ -196,7 +195,7 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
 }
 
 int main() {
-    char buffer[MAX_LINEA], conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion, stringAux[9];
+    char buffer[MAX_LINEA], conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion;
     Interval *aux;
     Set setDestino, setUno, setDos, setAux;
     TablaHash *th = tablahash_crear(hash, PROFUNDIDAD_MAXIMA); 
@@ -215,9 +214,7 @@ int main() {
         correcto = 1;
         operacion = ' ';
         // checkear si es imprimir
-        strncpy(stringAux, buffer, 9);
-        stringAux[9] = '\0';
-        if (strcmp(stringAux, "imprimir ") == 0) {
+        if (strncmp(buffer, "imprimir ", 9) == 0) {
             obtenerUltimoConjunto(buffer, conjuntoDestino, 9);
             if (conjuntoDestino[0] != '\0') {
                 contenedor = tablahash_buscar(th, conjuntoDestino);
@@ -316,7 +313,6 @@ int main() {
                                     setDestino = set_unir(setUno, setDos);
                                 else
                                     setDestino = set_copia(setUno);
-                                printf("\n");
                                 tablahash_eliminar(th, conjuntoDestino, set_destruir);
                                 tablahash_insertar(th, conjuntoDestino, setDestino);
                                 break;
@@ -326,7 +322,6 @@ int main() {
                                     setDestino = set_intersecar(setUno, setDos);
                                 else
                                     setDestino = set_copia(setUno);
-                                printf("\n");
                                 tablahash_eliminar(th, conjuntoDestino, set_destruir);
                                 tablahash_insertar(th, conjuntoDestino, setDestino);
                                 break;
@@ -336,7 +331,6 @@ int main() {
                                     setDestino = set_restar(setUno, setDos);
                                 else
                                     setDestino = set_crear();
-                                printf("\n");
                                 tablahash_eliminar(th, conjuntoDestino, set_destruir);
                                 tablahash_insertar(th, conjuntoDestino, setDestino);
                                 break;
@@ -346,7 +340,7 @@ int main() {
             }
         }
         if (correcto == 0)
-            printf("Sos pelotudo\n");
+            printf("Formato Incorrecto\n");
     }
 
     tablahash_destruir_entera(th, set_destruir);

@@ -173,8 +173,6 @@ Set set_unir(Set set1, Set set2) {
         set_insertar_ultimo(&salida, intervalInsertar);
     return salida;
 }
-// 3:7, 10
-// 1, 3, 5, 7
 
 Set set_intersecar(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 1, terminado;
@@ -212,6 +210,8 @@ Set set_complemento(Set set) {
             set_insertar_ultimo(&salida, interval_crear(anterior, interval_extremo_izq(set->intervalArray[posicion]) - 1));
         if (interval_extremo_der(set->intervalArray[posicion]) != INT_MAX)
             anterior = interval_extremo_der(set->intervalArray[posicion]) + 1;
+        else
+            anterior = interval_extremo_der(set->intervalArray[posicion]);
     }
     if (anterior != INT_MAX)
         set_insertar_ultimo(&salida, interval_crear(anterior, INT_MAX));
