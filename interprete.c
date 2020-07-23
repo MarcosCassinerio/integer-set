@@ -235,6 +235,7 @@ int main() {
                         aux = leer_compresion(buffer, pos + 4, buffer[pos + 1]);
                         if (aux) {
                             if (interval_valido(aux)) {
+                                tablahash_eliminar(th, conjuntoDestino, set_destruir);
                                 setDestino = set_insertar(setDestino, aux);
                                 tablahash_insertar(th, conjuntoDestino, setDestino);
                                 setDestino = NULL;
@@ -248,8 +249,10 @@ int main() {
                     // en caso contrario debe ser por extension "A = {"
                     } else {
                         setDestino = set_crear();
-                        if (leer_extension(buffer, pos + 1, &setDestino))
+                        if (leer_extension(buffer, pos + 1, &setDestino)) {
+                            tablahash_eliminar(th, conjuntoDestino, set_destruir);
                             tablahash_insertar(th, conjuntoDestino, setDestino);
+                        }
                         else
                             correcto = 0;
                         setDestino = NULL;
