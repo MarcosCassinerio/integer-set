@@ -51,7 +51,7 @@ int leer_extension(char *string, int posicion, Set *set) {
 }
 
 Interval *leer_compresion(char *string, int posicion, char nombreInterval) {
-    char *resto, aux1[10], aux2[10];
+    char *resto, aux1[10];
     int numero1, numero2;
     string += posicion;
     if (isdigit(*string) != 0 || *string == '-') {
@@ -59,11 +59,9 @@ Interval *leer_compresion(char *string, int posicion, char nombreInterval) {
     }
     strcpy(aux1, " <= ");
     aux1[4] = nombreInterval;
+    aux1[5] = '\0';
     strcat(aux1, " <= ");
-    aux1[9] = '\0';
-    strncpy(aux2, resto, 9);
-    aux2[9] = '\0';
-    if (strcmp(aux1, aux2) == 0 && (isdigit(*(resto + 9)) != 0 || *(resto + 9) == '-')) {
+    if (strncmp(resto, aux1, 9) == 0 && (isdigit(*(resto + 9)) != 0 || *(resto + 9) == '-')) {
         string = resto + 9;
         numero2 = strtol(string, &resto, 10);
     }
@@ -72,10 +70,10 @@ Interval *leer_compresion(char *string, int posicion, char nombreInterval) {
     }
     return NULL;
 }
-//A230 = {1}
+
 int obtenerConjuntoDestino(char *string, char *conjunto, int pos) {
     int numero = 0, aux = 1, aux1, numeroAux, loga;
-    char *resto, subString1[4], subString2[4];
+    char *resto;
     conjunto[0] = '\0';
     if (isalpha(*string) != 0) {
         conjunto[0] = *string;
@@ -103,9 +101,7 @@ int obtenerConjuntoDestino(char *string, char *conjunto, int pos) {
                 }
                 conjunto[PROFUNDIDAD_MAXIMA] = '\0';
             }
-            strcpy(subString1, " = ");
-            strncpy(subString2, string, 3);
-            if (strcmp(subString1, subString2) != 0)
+            if (strncmp(string, " = ", 3) != 0)
                 conjunto[0] = '\0';
             pos += 3;
         } else
@@ -198,7 +194,7 @@ int main() {
     char buffer[MAX_LINEA], conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion;
     Interval *aux;
     Set setDestino, setUno, setDos, setAux;
-    TablaHash *th = tablahash_crear(hash, PROFUNDIDAD_MAXIMA); 
+    TablaHash *th = tablahash_crear(hash, PROFUNDIDAD_MAXIMA);
     Contenedor *contenedor = NULL;
     int pos, correcto;
     buffer[0] = '\0';

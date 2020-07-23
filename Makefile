@@ -1,7 +1,7 @@
 all: programa
 
 programa: tablahash.o interval.o set.o
-	gcc -Wall -Wextra -Werror -g -std=c99 -lm -o interprete interprete.c interval.o set.o tablahash.o
+	gcc -Wall -Wextra -Werror -g -std=c99 -o interprete interprete.c interval.o set.o tablahash.o -lm
 
 interval.o: ./Interval/interval.c
 	gcc -Wall -Wextra -Werror -g -std=c99 -c ./Interval/interval.c
