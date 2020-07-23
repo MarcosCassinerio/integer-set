@@ -1,6 +1,6 @@
 #include "./Interval/interval.h"
-#include "./TablaHash/tablahash.h"
 #include "./Set/set.h"
+#include "./TablaHash/tablahash.h"
 #include <ctype.h>
 #include <stdint.h>
 #include <math.h>
