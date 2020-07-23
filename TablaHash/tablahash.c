@@ -127,7 +127,7 @@ void tablahash_destruir(TablaHash* tabla) {
 void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {
   unsigned idx = 0;
 
-  for (; idx < tabla->capacidad && tabla->numElems; idx --) {
+  for (; idx < tabla->capacidad && tabla->numElems; idx ++) {
     if (tabla->tabla[idx].clave != ' ') {
       tabla->numElems --;
       if (tabla->profundidad == 0)

@@ -193,7 +193,7 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
 int main() {
     char buffer[MAX_LINEA], conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion;
     Interval *aux;
-    Set setDestino, setUno, setDos, setAux;
+    Set setDestino = NULL, setUno = NULL, setDos = NULL, setAux = NULL;
     TablaHash *th = tablahash_crear(hash, PROFUNDIDAD_MAXIMA);
     Contenedor *contenedor = NULL;
     int pos, correcto;
