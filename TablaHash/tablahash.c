@@ -130,11 +130,10 @@ void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {
   for (; idx < tabla->capacidad && tabla->numElems; idx --) {
     if (tabla->tabla[idx].clave != ' ') {
       tabla->numElems --;
-      tabla->tabla[idx].clave = ' ';
       if (tabla->profundidad == 0)
         funcion(tabla->tabla[idx].dato);
       else
-        tablahash_destruir_entera(tabla, funcion);
+        tablahash_destruir_entera(tabla->tabla[idx].dato, funcion);
     }
   }
 
