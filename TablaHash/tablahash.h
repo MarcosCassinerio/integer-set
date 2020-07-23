@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include "../Set/set.h"
 #define capacidadTH1 26
 #define capacidadTH2 10
 #define PROFUNDIDAD_MAXIMA 4

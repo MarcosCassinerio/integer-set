@@ -36,7 +36,8 @@ Set set_crear() {
     return set;
 }
 
-void set_destruir(Set set) {
+void set_destruir(void *dato) {
+    Set set = (Set) dato;
     int posicion = 0;
     if (set) {
         for (; posicion < set->size; posicion ++) {
@@ -73,9 +74,10 @@ Set set_insertar(Set set, Interval *interval) {
     }
     while (posicion < set->size) {
         intervalAux = NULL;
-        if (!interval)
+        if (!interval) {
             set_insertar_ultimo(&salida, interval_copy(set->intervalArray[posicion]));
-        else {
+            posicion ++;
+        } else {
             intervalAux = interval_concat(interval, set->intervalArray[posicion]);
             if (intervalAux) {
                 posicion ++;
