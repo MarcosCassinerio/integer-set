@@ -39,11 +39,13 @@ Set set_crear() {
 void set_destruir(void *dato) {
     Set set = (Set) dato;
     int posicion = 0;
-    if (set) {
-        for (; posicion < set->size; posicion ++) {
-            interval_destruir(&(set->intervalArray[posicion]));
+    if (set ) {
+        if (set->intervalArray) {
+            for (; posicion < set->size; posicion ++) {
+                interval_destruir(&(set->intervalArray[posicion]));
+            }
+            free(set->intervalArray);
         }
-        free(set->intervalArray);
         free(set);
     }
 }
@@ -61,12 +63,12 @@ Set set_copia(Set set) {
 Set set_insertar(Set set, Interval *interval) {
     int posicion = 0;
     Interval *intervalAux;
-    Set salida = set_crear();
+    Set salida = NULL;
     if (!interval_valido(interval)) {
         printf("Intervalo invalido\n");
-        set_destruir(salida);
         return set;
     }
+    salida = set_crear();
     if (!set) {
         set_insertar_ultimo(&salida, interval);
         return salida;
