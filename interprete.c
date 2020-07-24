@@ -46,7 +46,7 @@ int leer_extension(char *string, int posicion, Set *set) {
     if (*(string + 1) != '\0')
         correcto = 0;
     if (correcto == 0)
-        set_destruir(&set);
+        set_destruir(*set);
     return correcto;
 }
 
