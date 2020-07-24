@@ -55,9 +55,9 @@ int interval_valido(Interval *interval) {
     if (interval->extremoIzq > interval->extremoDer) {
       interval_destruir(&interval); // Eliminamos el intervalo ya que es invalido
       return 0;
-    } else
-      return 1;
+    }
   }
+  return 1;
 }
 
 Interval *interval_interseccion(Interval *interval1, Interval *interval2) {
