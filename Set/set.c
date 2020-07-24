@@ -36,12 +36,12 @@ Set set_crear() {
     return set;
 }
 
-void set_destruir(void *dato) {
-    Set set = (Set) dato;
+void set_destruir(void **dato) {
+    Set set = (Set) *dato;
     int posicion = 0;
     if (set) {
         for (; posicion < set->size; posicion ++) {
-            interval_destruir(set->intervalArray[posicion]);
+            interval_destruir(&(set->intervalArray[posicion]));
         }
         free(set->intervalArray);
         free(set);
@@ -65,7 +65,7 @@ Set set_insertar(Set set, Interval *interval) {
     Set salida = set_crear();
     if (!interval_valido(interval)) {
         printf("Intervalo invalido\n");
-        set_destruir(salida);
+        set_destruir(&salida);
         return set;
     }
     if (!set) {
@@ -81,7 +81,7 @@ Set set_insertar(Set set, Interval *interval) {
             intervalAux = interval_concat(interval, set->intervalArray[posicion]);
             if (intervalAux) {
                 posicion ++;
-                interval_destruir(interval);
+                interval_destruir(&interval);
                 interval = intervalAux;
             } else if (interval_extremo_izq(set->intervalArray[posicion]) < interval_extremo_izq(interval)){
                 set_insertar_ultimo(&salida, interval_copy(set->intervalArray[posicion]));
@@ -94,7 +94,7 @@ Set set_insertar(Set set, Interval *interval) {
     }
     if (interval)
         set_insertar_ultimo(&salida, interval);
-    set_destruir(set);
+    set_destruir(&set);
     return salida;
 }
 
@@ -199,7 +199,7 @@ Set set_intersecar(Set set1, Set set2) {
 Set set_restar(Set set1, Set set2) {
     Set salida1 = set_complemento(set2);
     Set salida2 = set_intersecar(set1, salida1);
-    set_destruir(salida1);
+    set_destruir(&salida1);
     return salida2;
 }
 

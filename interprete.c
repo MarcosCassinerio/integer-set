@@ -46,11 +46,11 @@ int leer_extension(char *string, int posicion, Set *set) {
     if (*(string + 1) != '\0')
         correcto = 0;
     if (correcto == 0)
-        set_destruir(*set);
+        set_destruir(set);
     return correcto;
 }
 
-Interval *leer_compresion(char *string, int posicion, char nombreInterval) {
+Interval *leer_comprension(char *string, int posicion, char nombreInterval) {
     char *resto, aux1[10];
     int numero1, numero2;
     string += posicion;
@@ -199,7 +199,7 @@ int main() {
     int pos, correcto;
     buffer[0] = '\0';
     printf("Crear conjunto por extension: 'A = {-2, 5, 7, -9}'\n");
-    printf("Crear conjunto por compresion: 'A = {x: -9 <= x <= 42}'\n");
+    printf("Crear conjunto por comprension: 'A = {x: -9 <= x <= 42}'\n");
     printf("Unir conjuntos: 'A = A | A1'\n");
     printf("Intersecar conjuntos: 'A = A & A1'\n");
     printf("Restar conjuntos: 'A = A - A1'\n");
@@ -230,9 +230,9 @@ int main() {
             else {
                 // checkear si es crear conjunto "A = {"
                 if (buffer[pos] == '{') {
-                    // checkear si es crear por compresion "A = {x: "
+                    // checkear si es crear por comprension "A = {x: "
                     if (isalpha(buffer[pos + 1]) != 0 && buffer[pos + 2] == ':' && buffer[pos + 3] == ' ') {
-                        aux = leer_compresion(buffer, pos + 4, buffer[pos + 1]);
+                        aux = leer_comprension(buffer, pos + 4, buffer[pos + 1]);
                         if (aux) {
                             if (interval_valido(aux)) {
                                 tablahash_eliminar(th, conjuntoDestino, set_destruir);
@@ -241,8 +241,7 @@ int main() {
                                 setDestino = NULL;
                             } else {
                                 printf("Intervalo invalido\n");
-                                interval_destruir(aux);
-                                aux = NULL;
+                                interval_destruir(&aux);
                             }
                         } else
                             correcto = 0;

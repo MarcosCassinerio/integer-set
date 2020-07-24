@@ -13,9 +13,10 @@ Interval *interval_crear(int extremoIzq, int extremoDer) {
   return interval;             // Retornamos el puntero al interval
 }
 
-void interval_destruir(Interval *interval) {
-  if (interval)
-    free(interval);
+void interval_destruir(Interval **interval) {
+  if (*interval)
+    free(*interval);
+  *interval = NULL;
 }
 
 int interval_extremo_izq(Interval *interval) {
@@ -51,7 +52,7 @@ void interval_imprimir(Interval *interval) {
 int interval_valido(Interval *interval) {
   // Si no existe el intervalo o  el extremo izquierdo del intervalo es mayor al extremo derecho
   if (!interval || (interval->extremoIzq > interval->extremoDer)) {
-    interval_destruir(interval); // Eliminamos el intervalo ya que es invalido
+    interval_destruir(&interval); // Eliminamos el intervalo ya que es invalido
     return 0;
   }
   return 1;

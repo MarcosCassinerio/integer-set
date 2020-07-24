@@ -103,7 +103,7 @@ void tablahash_eliminar(TablaHash *tabla, char *clave, FuncionVisitante funcion)
     if (tabla->tabla[idx].clave != ' ') {
       tabla->numElems --;
       tabla->tabla[idx].clave = ' ';
-      funcion(tabla->tabla[idx].dato);
+      funcion(&(tabla->tabla[idx].dato));
     }
   } else {
     if (tabla->tabla[idx].clave != ' ') {
@@ -131,7 +131,7 @@ void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {
     if (tabla->tabla[idx].clave != ' ') {
       tabla->numElems --;
       if (tabla->profundidad == 0)
-        funcion(tabla->tabla[idx].dato);
+        funcion(&(tabla->tabla[idx].dato));
       else
         tablahash_destruir_entera(tabla->tabla[idx].dato, funcion);
     }

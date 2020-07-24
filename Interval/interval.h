@@ -17,10 +17,10 @@ typedef struct _Interval Interval;
 Interval *interval_crear(int extremoIzq, int extremoDer);
 
 /*
-  interval_destruir: Interval*
+  interval_destruir: Interval**
   Dado un interval libera la memoria que ocupa, borrandolo.
 */
-void interval_destruir(Interval *interval);
+void interval_destruir(Interval **interval);
 
 /*
   interval_extremo_izq: Interval* -> int
