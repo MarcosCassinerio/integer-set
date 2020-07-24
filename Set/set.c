@@ -81,6 +81,7 @@ Set set_insertar(Set set, Interval *interval) {
             intervalAux = interval_concat(interval, set->intervalArray[posicion]);
             if (intervalAux) {
                 posicion ++;
+                interval_destruir(interval);
                 interval = intervalAux;
             } else if (interval_extremo_izq(set->intervalArray[posicion]) < interval_extremo_izq(interval)){
                 set_insertar_ultimo(&salida, interval_copy(set->intervalArray[posicion]));
