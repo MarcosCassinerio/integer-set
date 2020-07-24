@@ -241,7 +241,6 @@ int main() {
                                 setDestino = NULL;
                             } else {
                                 printf("Intervalo invalido\n");
-                                interval_destruir(&aux);
                             }
                         } else
                             correcto = 0;
