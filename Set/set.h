@@ -8,7 +8,7 @@ typedef struct _Set *Set;
 
 Set set_crear();
 
-void set_destruir(void **dato);
+void set_destruir(void *dato);
 
 Set set_copia(Set set);
 
