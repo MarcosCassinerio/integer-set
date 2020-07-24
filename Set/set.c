@@ -98,6 +98,7 @@ Set set_insertar(Set set, Interval *interval) {
     set_destruir(set);
     return salida;
 }
+//
 
 Set set_unir(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 0, concatenado;
@@ -114,12 +115,14 @@ Set set_unir(Set set1, Set set2) {
                 concatenado = 0;
                 intervalAux = interval_concat(intervalInsertar, set1->intervalArray[posicion1]);
                 if (intervalAux) {
+                    interval_destruir(&intervalInsertar);
                     intervalInsertar = intervalAux;
                     posicion1 ++;
                     concatenado = 1;
                 }
                 intervalAux = interval_concat(intervalInsertar, set2->intervalArray[posicion2]);
                 if (intervalAux) {
+                    interval_destruir(&intervalInsertar);
                     intervalInsertar = intervalAux;
                     posicion2 ++;
                     concatenado = 1;
@@ -145,6 +148,7 @@ Set set_unir(Set set1, Set set2) {
             if (intervalInsertar) {
                 intervalAux = interval_concat(intervalInsertar, set1->intervalArray[posicion1]);
                 if (intervalAux) {
+                    interval_destruir(&intervalInsertar);
                     intervalInsertar = intervalAux;
                     posicion1 ++;
                 } else {
@@ -159,6 +163,7 @@ Set set_unir(Set set1, Set set2) {
             if (intervalInsertar) {
                 intervalAux = interval_concat(intervalInsertar, set2->intervalArray[posicion2]);
                 if (intervalAux) {
+                    interval_destruir(&intervalInsertar);
                     intervalInsertar = intervalAux;
                     posicion2 ++;
                 } else {
