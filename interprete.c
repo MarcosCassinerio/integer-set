@@ -13,19 +13,19 @@ int hash(char clave) {
     Toma lo escrito por el teclado, y lo retorna reemplazando el salto de linea
     por un '\0'.
 */
-char *leer_cadena(char *string) {
-    char c, *aux = string;
+char *leer_cadena(char **string) {
+    char c, *aux = *string;
     int size = 1;
     // Mientras que el caracter leido sea distinto a '\n'
     while ((c = getchar()) != '\n') {
         if (c != '\r') {            // Si el caracter leido es distinto a '\r'
-            *string = c;              // Almacenamos el caracter en string
+            **string = c;              // Almacenamos el caracter en string
             ++size;
-            string = realloc(string, sizeof(char) * size);
-            ++string;                 // Movemos la posicion a la que apunta string
+            *string = realloc(*string, sizeof(char) * size);
+            ++(*string);                 // Movemos la posicion a la que apunta string
         }
     }
-    *string = '\0';               // Colocamos un terminador al final
+    **string = '\0';               // Colocamos un terminador al final
     return aux;                   // Devolvemos un puntero al comienzo de string
 }
 
@@ -206,7 +206,7 @@ int main() {
     printf("Complemento de conjuntos: 'A = ~A'\n");
     printf("Imprimir conjuntos: 'imprimir A'\n");
     printf("Cerrar el interprete: 'salir'\n");
-    while (strcmp(leer_cadena(buffer), "salir\0")) {
+    while (strcmp(leer_cadena(&buffer), "salir\0")) {
         correcto = 1;
         operacion = ' ';
         // checkear si es imprimir
