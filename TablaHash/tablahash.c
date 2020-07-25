@@ -57,7 +57,6 @@ TablaHash *tablahash_crear(FuncionHash hash, unsigned profundidad) {
 }
 
 void tablahash_insertar(TablaHash *tabla, char *clave, void *dato) {
-  TablaHash *tablaAux;
   unsigned idx;
   // Si la clave en esa posicion es una letra guarda su mayuscula
   if (isalpha(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]) != 0)
@@ -66,20 +65,20 @@ void tablahash_insertar(TablaHash *tabla, char *clave, void *dato) {
   idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   idx = idx % tabla->capacidad;
 
-  // Le asigna la clave a la casilla dada
-  tabla->tabla[idx].clave = clave[PROFUNDIDAD_MAXIMA - tabla->profundidad];
-
   if (tabla->profundidad == 0) { // Si la profundidad es 0
     if (tabla->tabla[idx].clave == ' ') // Si la clave es un espacio
       tabla->numElems ++; // Aumenta en uno la cantidad de elementos
+    // Le asigna la clave a la casilla dada
+    tabla->tabla[idx].clave = clave[PROFUNDIDAD_MAXIMA - tabla->profundidad];
     tabla->tabla[idx].dato = dato; // Le asigna el dato dado
   } else {
     if (tabla->tabla[idx].clave == ' ') { // Si la clave es un espacio
       tabla->numElems ++; // Aumenta en uno la cantidad de elementos
       // Crea una tabla y la inserta en el dato de la casilla
-      tablaAux = tablahash_crear(tabla->hash, tabla->profundidad - 1);
-      tabla->tabla[idx].dato = tablaAux;
+      tabla->tabla[idx].dato = tablahash_crear(tabla->hash, tabla->profundidad - 1);
     }
+    // Le asigna la clave a la casilla dada
+    tabla->tabla[idx].clave = clave[PROFUNDIDAD_MAXIMA - tabla->profundidad];
     // Inserta el dato en la casilla de la tabla
     tablahash_insertar(tabla->tabla[idx].dato, clave, dato);
   }

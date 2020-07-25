@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <math.h>
 #define LEN_MAX 100
+#define MAX_INTERVALS 50
 
 int hash(char clave) {
     return clave;
@@ -20,24 +21,25 @@ char *leer_cadena(char **string) {
     *string = malloc(sizeof(char) * size);
     // Mientras que el caracter leido sea distinto a '\n'
     while ((c = getchar()) != '\n') {
-        *string[pos++] = c; // Almacenamos el caracter en string
+        (*string)[pos++] = c; // Almacenamos el caracter en string
         if (pos == LEN_MAX) {
             size = pos + LEN_MAX;
             *string = realloc(*string, sizeof(char) * size);
         }
     }
-    *string[pos] = '\0'; // Colocamos un terminador al final
+    (*string)[pos] = '\0'; // Colocamos un terminador al final
     return *string; // Devolvemos un puntero al comienzo de string
 }
 
 int leer_extension(char *string, int posicion, Set *set) {
     char *resto;
-    int numero, correcto = 1;
+    int numero, correcto = 1, tamanoActual = MAX_INTERVALS, aux = 0, pos = 0;
     string += posicion;
+    Interval **intervalArray = malloc(sizeof(Interval*) * tamanoActual);
     while (correcto == 1 && *string != '}') {
         if (isdigit(*string) != 0 || *string == '-') {
             numero = strtol(string, &resto, 10);
-            *set = set_insertar(*set, interval_crear(numero, numero));
+            intervalArray[pos++] = interval_crear(numero, numero);
             if (*resto == ',' && *(resto + 1) == ' ' && (*(resto + 2) == '-' || isdigit(*(resto + 2)) != 0))
                 string = resto + 2;
             else
@@ -47,8 +49,15 @@ int leer_extension(char *string, int posicion, Set *set) {
     }
     if (*(string + 1) != '\0')
         correcto = 0;
-    if (correcto == 0)
-        set_destruir(*set);
+    if (correcto == 0) {
+        for (; aux < pos; ++aux)
+            interval_destruir(&(intervalArray[aux]));
+    } else {
+        *set = set_crear(pos);
+        for (; aux < pos; ++aux)
+            set_insertar(set, intervalArray[aux]);
+    }
+    free(intervalArray);
     return correcto;
 }
 
@@ -237,7 +246,7 @@ int main() {
                         if (aux) {
                             if (interval_valido(aux)) {
                                 tablahash_eliminar(th, conjuntoDestino, set_destruir);
-                                setDestino = set_insertar(setDestino, aux);
+                                set_insertar(&setDestino, aux);
                                 tablahash_insertar(th, conjuntoDestino, setDestino);
                                 setDestino = NULL;
                             } else {
@@ -247,7 +256,6 @@ int main() {
                             correcto = 0;
                     // en caso contrario debe ser por extension "A = {"
                     } else {
-                        setDestino = set_crear();
                         if (leer_extension(buffer, pos + 1, &setDestino)) {
                             tablahash_eliminar(th, conjuntoDestino, set_destruir);
                             tablahash_insertar(th, conjuntoDestino, setDestino);
@@ -287,14 +295,14 @@ int main() {
                     if (contenedor) {
                         setUno = contenedor_obtener_dato(contenedor);
                         free(contenedor);
-                    } else {
-                        operacion = ' ';
+                    } else
                         printf("No se encontro el conjunto %s\n", conjuntoUno);
-                    }
                     if (operacion == '~') {
-                        setAux = set_complemento(setUno);
-                        tablahash_eliminar(th, conjuntoDestino, set_destruir);
-                        tablahash_insertar(th, conjuntoDestino, setAux);
+                        if (contenedor) {
+                            setAux = set_complemento(setUno);
+                            tablahash_eliminar(th, conjuntoDestino, set_destruir);
+                            tablahash_insertar(th, conjuntoDestino, setAux);
+                        }
                     } else {
                         contenedor = tablahash_buscar(th, conjuntoDos);
                         if (contenedor) {
@@ -328,7 +336,7 @@ int main() {
                                 if (setUno != setDos)
                                     setDestino = set_restar(setUno, setDos);
                                 else
-                                    setDestino = set_crear();
+                                    setDestino = set_crear(0);
                                 tablahash_eliminar(th, conjuntoDestino, set_destruir);
                                 tablahash_insertar(th, conjuntoDestino, setDestino);
                                 break;

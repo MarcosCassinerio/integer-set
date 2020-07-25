@@ -10,7 +10,7 @@ typedef struct _Set *Set;
   set_crear: -> Set
   Retorna un conjunto con tamano 0 y un array de intervalos vacio.
 */
-Set set_crear();
+Set set_crear(int size);
 
 /*
   set_destruir: void*
@@ -25,11 +25,10 @@ void set_destruir(void *dato);
 Set set_copia(Set set);
 
 /*
-  set_insertar: Set, Interval* -> Set
-  Dado un conjunto y un intervalo, crea un nuevo conjunto con los intervalos 
-  del conjunto dado y el intervalo dado.
+  set_insertar: Set* Interval*
+  Inserta el intervalo dado en el conjunto manteniendo el orden.
 */
-Set set_insertar(Set set, Interval *interval);
+void set_insertar(Set *set, Interval *interval);
 
 /*
   set_unir: Set Set -> Set
