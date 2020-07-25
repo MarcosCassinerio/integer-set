@@ -15,14 +15,14 @@ int hash(char clave) {
 */
 char *leer_cadena(char *string) {
     char c, *aux = string;
-    int size = 2;
-    string = malloc(sizeof(char));
+    int size = 1;
     // Mientras que el caracter leido sea distinto a '\n'
-    for (; (c = getchar()) != '\n'; ++size) {
+    while ((c = getchar()) != '\n') {
         if (c != '\r') {            // Si el caracter leido es distinto a '\r'
             *string = c;              // Almacenamos el caracter en string
+            ++size;
+            string = realloc(string, sizeof(char) * size);
             ++string;                 // Movemos la posicion a la que apunta string
-            string = realloc(string, sizeof(size));
         }
     }
     *string = '\0';               // Colocamos un terminador al final
