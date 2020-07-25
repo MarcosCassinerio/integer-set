@@ -7,8 +7,9 @@
 typedef struct _Set *Set;
 
 /*
-  set_crear: -> Set
-  Retorna un conjunto con tamano 0 y un array de intervalos vacio.
+  set_crear: int -> Set
+  Dado un numero entero, crea un conjunto y le asigna ese numero al tamano de
+  su array de intervalos.
 */
 Set set_crear(int size);
 

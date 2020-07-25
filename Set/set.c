@@ -7,13 +7,14 @@ struct _Set {
 
 /*
   set_insertar_ultimo: Set* Interval*
-  Dado un conjunto y un intervalo, inserta dicho intervalo al final del array
-  de intervalos del conjunto.
+  Dado un conjunto y un intervalo, inserta dicho intervalo en la siguiente
+  posicion del array de intervalos.
 */
 void set_insertar_ultimo(Set *set, Interval *interval) {
     if (set && *set) { // Si el conjunto no es nulo
-        (*set)->size++; // Aumenta el tamano del array de intervalos
-        (*set)->intervalArray[(*set)->size - 1] = interval;
+        // Inserta el intervalo en la siguiente posicion del array de intervalos
+        (*set)->intervalArray[(*set)->size] = interval;
+        (*set)->size++; // Aumenta el tamano de la cantidad de intervalos actuales
     }
 }
 
@@ -45,7 +46,8 @@ int buscar_inicio_interseccion(Interval **intervalArray, Interval *interval, int
 Set set_crear(int size) {
     Set set = malloc(sizeof(struct _Set)); // Pide memoria para el conjunto
     set->size = 0;  // Le asigna 0 al tamano del conjunto
-    set->intervalArray = malloc(sizeof(Interval*) * size); // Setea NULL en el array de intervalos
+    // Le asigna el tamano al array de intervalos
+    set->intervalArray = malloc(sizeof(Interval*) * size);
     return set; // Retorna el conjunto
 }
 
@@ -82,9 +84,10 @@ void set_insertar(Set *set, Interval *interval) {
     Set salida = NULL;
 
     if (!set || !(*set)) // Si el conjunto es nulo
-        *set = set_crear(1); // Inicializa el conjunto
+        *set = set_crear(1); // Inicializa el conjunto con tamano 1
 
-    if (interval_valido(interval)) {
+    if (interval_valido(interval)) { // Si el intervalo es valido
+        // Inicializa salida con un tamano uno mayor al conjunto
         salida = set_crear((*set)->size + 1);
         while (posicion < (*set)->size) {
             intervalAux = NULL;
@@ -121,7 +124,7 @@ void set_insertar(Set *set, Interval *interval) {
 }
 
 Set set_unir(Set set1, Set set2) {
-    int posicion1 = 0, posicion2 = 0, concatenado;
+    int posicion1 = 0, posicion2 = 0, concatenado, *posicion;
     Interval *intervalInsertar = NULL, *intervalAux;
     Set salida = set_crear(set1->size + set2->size), setAux = NULL;
     if (!set1->size || !set2->size) {
@@ -164,35 +167,22 @@ Set set_unir(Set set1, Set set2) {
                     posicion2 ++;
                 }
             }
-        } else if (posicion1 < set1->size) {
-            if (intervalInsertar) {
-                intervalAux = interval_concat(intervalInsertar, set1->intervalArray[posicion1]);
-                if (intervalAux) {
-                    interval_destruir(&intervalInsertar);
-                    intervalInsertar = intervalAux;
-                    posicion1 ++;
-                } else {
-                    set_insertar_ultimo(&salida, intervalInsertar);
-                    intervalInsertar = NULL;
-                }
-            } else {
-                set_insertar_ultimo(&salida, interval_copy(set1->intervalArray[posicion1]));
-                posicion1 ++;
-            }
         } else {
+            setAux = posicion1 < set1->size ? set1 : set2;
+            posicion = posicion1 < set1->size ? &posicion1 : &posicion2;
             if (intervalInsertar) {
-                intervalAux = interval_concat(intervalInsertar, set2->intervalArray[posicion2]);
+                intervalAux = interval_concat(intervalInsertar, setAux->intervalArray[*posicion]);
                 if (intervalAux) {
                     interval_destruir(&intervalInsertar);
                     intervalInsertar = intervalAux;
-                    posicion2 ++;
+                    posicion ++;
                 } else {
                     set_insertar_ultimo(&salida, intervalInsertar);
                     intervalInsertar = NULL;
                 }
             } else {
-                set_insertar_ultimo(&salida, interval_copy(set2->intervalArray[posicion2]));
-                posicion2 ++;
+                set_insertar_ultimo(&salida, interval_copy(setAux->intervalArray[*posicion]));
+                posicion ++;
             }
         }
     }
@@ -200,8 +190,6 @@ Set set_unir(Set set1, Set set2) {
         set_insertar_ultimo(&salida, intervalInsertar);
     return salida;
 }
-// -4, 8
-// int_min:int_max
 
 Set set_intersecar(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 1, terminado;
