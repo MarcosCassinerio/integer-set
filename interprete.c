@@ -3,6 +3,7 @@
 #include "./TablaHash/tablahash.h"
 #include <stdint.h>
 #include <math.h>
+#define LEN_MAX 100
 
 int hash(char clave) {
     return clave;
@@ -14,18 +15,19 @@ int hash(char clave) {
     por un '\0'.
 */
 char *leer_cadena(char **string) {
-    char c, *aux = *string;
-    int size = 1;
+    char c;
+    int pos = 0, size = LEN_MAX;
+    *string = malloc(sizeof(char) * size);
     // Mientras que el caracter leido sea distinto a '\n'
     while ((c = getchar()) != '\n') {
-        if (c != '\r') {            // Si el caracter leido es distinto a '\r'
-            *string[size - 1] = c;              // Almacenamos el caracter en string
-            ++size;
+        *string[pos++] = c;              // Almacenamos el caracter en string
+        if (pos == LEN_MAX) {
+            size = pos + LEN_MAX;
             *string = realloc(*string, sizeof(char) * size);
         }
     }
-    *string[size - 1] = '\0';               // Colocamos un terminador al final
-    return aux;                   // Devolvemos un puntero al comienzo de string
+    *string[pos] = '\0';               // Colocamos un terminador al final
+    return *string;                   // Devolvemos un puntero al comienzo de string
 }
 
 int leer_extension(char *string, int posicion, Set *set) {
