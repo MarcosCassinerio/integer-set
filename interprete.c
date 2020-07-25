@@ -19,13 +19,12 @@ char *leer_cadena(char **string) {
     // Mientras que el caracter leido sea distinto a '\n'
     while ((c = getchar()) != '\n') {
         if (c != '\r') {            // Si el caracter leido es distinto a '\r'
-            **string = c;              // Almacenamos el caracter en string
+            *string[size - 1] = c;              // Almacenamos el caracter en string
             ++size;
             *string = realloc(*string, sizeof(char) * size);
-            ++(*string);                 // Movemos la posicion a la que apunta string
         }
     }
-    **string = '\0';               // Colocamos un terminador al final
+    *string[size - 1] = '\0';               // Colocamos un terminador al final
     return aux;                   // Devolvemos un puntero al comienzo de string
 }
 
@@ -192,7 +191,7 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
 }
 
 int main() {
-    char *buffer = malloc(sizeof(char)), conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion;
+    char *buffer, conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion;
     Interval *aux;
     Set setDestino = NULL, setUno = NULL, setDos = NULL, setAux = NULL;
     TablaHash *th = tablahash_crear(hash, PROFUNDIDAD_MAXIMA);
@@ -339,7 +338,6 @@ int main() {
         if (correcto == 0)
             printf("Formato Incorrecto\n");
         free(buffer);
-        buffer = malloc(sizeof(char));
     }
     free(buffer);
     tablahash_destruir_entera(th, set_destruir);
