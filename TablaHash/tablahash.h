@@ -22,34 +22,48 @@ typedef struct _TablaHash TablaHash;
 
 typedef struct _Contenedor Contenedor;
 
+/*
+  contenedor_obtener_dato: Contenedor*
+  Dado un contenedor, si no es nulo devuelve su dato, en caso contrario devuelve
+  NULL;
+*/
 void *contenedor_obtener_dato(Contenedor *contenedor);
 
-/**
- * Crea una nueva tabla Hash vacía, con la capacidad dada.
- */
+/*
+  tablahash_crear: FuncionHash unsigned -> TablaHash*
+  Crea una nueva tabla Hash vacía, con la profundidad dada.
+*/
 TablaHash* tablahash_crear(FuncionHash hash, unsigned profundidad);
 
-/**
- * Inserta el dato en la tabla, asociado a la clave dada.
- */
+/*
+  tablahash_insertar: TablaHash* char* void*
+  Inserta el dato en la tabla, asociado a la clave dada.
+*/
 void tablahash_insertar(TablaHash* tabla, char *clave, void* dato);
 
-/**
- * Busca un elemento dado en la tabla, y retorna un puntero al mismo.
- * En caso de no existir, se retorna un puntero nulo.
- */
+/*
+  tablahash_buscar: TablaHash* char* -> Contenedor*
+  Busca un elemento dado en la tabla, y retorna un contenedor con el dato en el.
+  En caso de no existir, se retorna un contenedor nulo.
+*/
 Contenedor *tablahash_buscar(TablaHash* tabla, char *clave);
 
-/**
- * Elimina un elemento de la tabla.
- */
+/*
+  tablahash_eliminar: TablaHash* char* FuncionVisitante
+  Elimina un elemento de la tabla con una funcion dada a partir de una clave.
+*/
 void tablahash_eliminar(TablaHash* tabla, char *clave, FuncionVisitante funcion);
 
-/**
- * Destruye la tabla.
- */
+/*
+  tablahash_destruir: TablaHash*
+  Destruye la tabla.
+*/
 void tablahash_destruir(TablaHash* tabla);
 
+/*
+  tablahash_destruir_entera: TablaHash* FuncionVisitante
+  Destruye todos los elimentos de la tabla con la funcion dada.
+*/
 void tablahash_destruir_entera(TablaHash* tabla, FuncionVisitante funcion);
 
 #endif /* __TABLAHASH_H__ */

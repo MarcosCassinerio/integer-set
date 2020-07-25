@@ -36,6 +36,11 @@ int interval_extremo_izq(Interval *interval);
 */
 int interval_extremo_der(Interval *interval);
 
+/*
+  interval_concat: Interval* Interval* -> Interval*
+  Dados 2 intervalos, si estos se intersecan o son contiguos retorna la union
+  de ellos, en caso contrario retorna un intervalo nulo.
+*/
 Interval *interval_concat(Interval *interval1, Interval *interval2);
 
 /*
@@ -46,15 +51,29 @@ void interval_imprimir(Interval *interval);
 
 /*
   intervalo_valido: Intervalo* -> int
-  Dado un puntero intervalo, retorna 1 si es valido y imprime por pantalla un 
-  error, 0 en caso contrario.
+  Dado un puntero intervalo, retorna 1 si es valido. En caso contrario retorna 0
+  y lo elimina si no es nulo.
 */
 int interval_valido(Interval *interval);
 
+/*
+  interval_interseccion: Interval* Interval* -> Interval*
+  Dados 2 intervalos, retorna su interseccion.
+*/
 Interval *interval_interseccion(Interval *interval1, Interval *interval2);
 
+/*
+  interval_comparar: Interval* Interval* -> int
+  Dados 2 intervalos, retorna un numero mayor a 0 si el extremo izquierdo del
+  primer intervalo es mayor al del segundo, 0 si son iguales y uno menor a 0
+  si es menor en caso contrario.
+*/
 int interval_comparar(Interval *interval1, Interval *interval2);
 
+/*
+  interval_copy: Interval* -> Interval*
+  Dado un intervalo, retorna una copia de este.
+*/
 Interval *interval_copy(Interval *interval);
 
 #endif                          /* __INTERVAL_H__ */
