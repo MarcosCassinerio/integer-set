@@ -83,7 +83,7 @@ void set_insertar(Set *set, Interval *interval) {
 
     if (!set || !(*set)) // Si el conjunto es nulo
         *set = set_crear(1); // Inicializa el conjunto
-    
+
     if (interval_valido(interval)) {
         salida = set_crear((*set)->size + 1);
         while (posicion < (*set)->size) {
@@ -200,6 +200,8 @@ Set set_unir(Set set1, Set set2) {
         set_insertar_ultimo(&salida, intervalInsertar);
     return salida;
 }
+// -4, 8
+// int_min:int_max
 
 Set set_intersecar(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 1, terminado;
@@ -218,6 +220,8 @@ Set set_intersecar(Set set1, Set set2) {
             } else
                 terminado = 1;
         }
+        if (posicion2 != 1)
+          posicion2 --;
     }
     return salida;
 }
