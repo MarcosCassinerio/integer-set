@@ -60,7 +60,10 @@ TablaHash *tablahash_crear(FuncionHash hash, unsigned profundidad) {
 
 void tablahash_insertar(TablaHash *tabla, char *clave, void *dato) {
   TablaHash *tablaAux;
-  unsigned idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
+  unsigned idx;
+  if (isalpha(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]) != 0)
+    clave[PROFUNDIDAD_MAXIMA - tabla->profundidad] = toupper(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
+  idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   idx = idx % tabla->capacidad;
 
   if (tabla->profundidad == 0) {
@@ -81,7 +84,10 @@ void tablahash_insertar(TablaHash *tabla, char *clave, void *dato) {
 }
 
 Contenedor *tablahash_buscar(TablaHash *tabla, char *clave) {
-  unsigned idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
+  unsigned idx;
+  if (isalpha(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]) != 0)
+    clave[PROFUNDIDAD_MAXIMA - tabla->profundidad] = toupper(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
+  idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   idx = idx % tabla->capacidad;
 
   if (tabla->profundidad == 0) {

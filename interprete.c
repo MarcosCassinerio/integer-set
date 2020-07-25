@@ -1,10 +1,8 @@
 #include "./Interval/interval.h"
 #include "./Set/set.h"
 #include "./TablaHash/tablahash.h"
-#include <ctype.h>
 #include <stdint.h>
 #include <math.h>
-#define MAX_LINEA 100
 
 int hash(char clave) {
     return clave;
@@ -17,11 +15,14 @@ int hash(char clave) {
 */
 char *leer_cadena(char *string) {
     char c, *aux = string;
+    int size = 2;
+    string = malloc(sizeof(char));
     // Mientras que el caracter leido sea distinto a '\n'
-    while ((c = getchar()) != '\n') {
+    for (; (c = getchar()) != '\n'; ++size) {
         if (c != '\r') {            // Si el caracter leido es distinto a '\r'
             *string = c;              // Almacenamos el caracter en string
             ++string;                 // Movemos la posicion a la que apunta string
+            string = realloc(string, sizeof(size));
         }
     }
     *string = '\0';               // Colocamos un terminador al final
@@ -191,13 +192,12 @@ void obtenerUltimoConjunto(char *string, char *conjunto, int pos) {
 }
 
 int main() {
-    char buffer[MAX_LINEA], conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion;
+    char *buffer = malloc(sizeof(char)), conjuntoDestino[PROFUNDIDAD_MAXIMA + 1], conjuntoUno[PROFUNDIDAD_MAXIMA + 1], conjuntoDos[PROFUNDIDAD_MAXIMA + 1], operacion;
     Interval *aux;
     Set setDestino = NULL, setUno = NULL, setDos = NULL, setAux = NULL;
     TablaHash *th = tablahash_crear(hash, PROFUNDIDAD_MAXIMA);
     Contenedor *contenedor = NULL;
     int pos, correcto;
-    buffer[0] = '\0';
     printf("Crear conjunto por extension: 'A = {-2, 5, 7, -9}'\n");
     printf("Crear conjunto por comprension: 'A = {x: -9 <= x <= 42}'\n");
     printf("Unir conjuntos: 'A = A | A1'\n");
@@ -338,8 +338,10 @@ int main() {
         }
         if (correcto == 0)
             printf("Formato Incorrecto\n");
+        free(buffer);
+        buffer = malloc(sizeof(char));
     }
-
+    free(buffer);
     tablahash_destruir_entera(th, set_destruir);
     return 0;
 }
