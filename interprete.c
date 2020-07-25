@@ -20,14 +20,14 @@ char *leer_cadena(char **string) {
     *string = malloc(sizeof(char) * size);
     // Mientras que el caracter leido sea distinto a '\n'
     while ((c = getchar()) != '\n') {
-        *string[pos++] = c;              // Almacenamos el caracter en string
+        *string[pos++] = c; // Almacenamos el caracter en string
         if (pos == LEN_MAX) {
             size = pos + LEN_MAX;
             *string = realloc(*string, sizeof(char) * size);
         }
     }
-    *string[pos] = '\0';               // Colocamos un terminador al final
-    return *string;                   // Devolvemos un puntero al comienzo de string
+    *string[pos] = '\0'; // Colocamos un terminador al final
+    return *string; // Devolvemos un puntero al comienzo de string
 }
 
 int leer_extension(char *string, int posicion, Set *set) {

@@ -5,59 +5,77 @@ struct _Set {
     Interval **intervalArray;
 };
 
+/*
+  set_insertar_ultimo: Set* Interval*
+  Dado un conjunto y un intervalo, inserta dicho intervalo al final del array
+  de intervalos del conjunto.
+*/
 void set_insertar_ultimo(Set *set, Interval *interval) {
-    if (set && *set) {
-        (*set)->size++;
+    if (set && *set) { // Si el conjunto no es nulo
+        (*set)->size++; // Aumenta el tamano del array de intervalos
+        // Pide mas memoria para el array de intervalos
         (*set)->intervalArray = realloc((*set)->intervalArray, sizeof(Interval*) * (*set)->size);
+        // Inserta el intervalo al final del array de intervalos
         (*set)->intervalArray[(*set)->size - 1] = interval;
     }
 }
 
+/*
+  buscar_inicio_interseccion: Interval** Interval* int int -> int
+  Dado un array de intervalos, un intervalo y sus limites, devuelve la posicion
+  del menor intervalo del array de intervalos que interseca con el intervalo dado.
+*/
 int buscar_inicio_interseccion(Interval **intervalArray, Interval *interval, int inicio, int final) {
     if (inicio == final) {
         return inicio;
     }
     int posicion = (inicio + final) / 2;
     Interval *intervalAux = intervalArray[posicion - 1];
-    if (interval_extremo_izq(interval) <= interval_extremo_izq(intervalAux))
+    // Si interval es menor a intervalAux
+    if (interval_comparar(interval, intervalAux) <= 0)
+        // Retorna la llamada a la funcion con nuevos limites
         return buscar_inicio_interseccion(intervalArray, interval, inicio, posicion);
     else {
         Interval *intervalAux = intervalArray[posicion];
-        if (interval_extremo_izq(interval) <= interval_extremo_izq(intervalAux))
+        // Si interval es menor a intervalAux
+        if (interval_comparar(interval, intervalAux) <= 0)
             return posicion + 1;
+        // Retorna la llamada a la funcion con nuevos limites
         return buscar_inicio_interseccion(intervalArray, interval, posicion + 1, final);
     }
 }
 
 Set set_crear() {
-    Set set = malloc(sizeof(struct _Set));
-    set->size = 0;
-    set->intervalArray = NULL;
-    return set;
+    Set set = malloc(sizeof(struct _Set)); // Pide memoria para el conjunto
+    set->size = 0;  // Le asigna 0 al tamano del conjunto
+    set->intervalArray = NULL; // Setea NULL en el array de intervalos
+    return set; // Retorna el conjunto
 }
 
 void set_destruir(void *dato) {
-    Set set = (Set) dato;
+    Set set = (Set) dato; // Castea el dato a un conjunto
     int posicion = 0;
-    if (set ) {
-        if (set->intervalArray) {
+    if (set) { // Si el conjunto es no nulo
+        if (set->intervalArray) { // Si el array de intervalos es no nulo
             for (; posicion < set->size; posicion ++) {
+                // Destruye el intervalo en dicha posicion
                 interval_destruir(&(set->intervalArray[posicion]));
             }
-            free(set->intervalArray);
+            free(set->intervalArray); // Libera la memoria del array de intervalos
         }
-        free(set);
+        free(set); // Libera la memoria del conjunto
     }
 }
 
 Set set_copia(Set set) {
     int posicion = 0;
-    Set salida = set_crear();
-    if (set) {
+    Set salida = set_crear(); // Inicializa salida
+    if (set) { // Si el conjunto es no nulo
         for (; posicion < set->size; posicion ++)
-            set_insertar_ultimo(&salida, set->intervalArray[posicion]);
+            // Inserta una copia del intervalo dado al final de salida
+            set_insertar_ultimo(&salida, interval_copy(set->intervalArray[posicion]));
     }
-    return salida;
+    return salida; // Retorna salida
 }
 
 Set set_insertar(Set set, Interval *interval) {
