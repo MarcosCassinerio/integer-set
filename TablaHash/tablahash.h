@@ -9,18 +9,16 @@
 #define capacidadTH2 10
 #define PROFUNDIDAD_MAXIMA 4
 
-/**
- * Tipo de las funciones hash a ser consideradas por las tablas hash.
- */
 typedef int (*FuncionHash) (char clave);
 
 typedef void (*FuncionVisitante) (void *dato);
+
+typedef struct _Contenedor Contenedor;
 
 typedef struct _CasillaHash CasillaHash;
 
 typedef struct _TablaHash TablaHash;
 
-typedef struct _Contenedor Contenedor;
 
 /*
   contenedor_obtener_dato: Contenedor*

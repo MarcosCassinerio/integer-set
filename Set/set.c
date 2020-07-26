@@ -70,7 +70,6 @@ Set set_copia(Set set) {
     int posicion = 0;
     Set salida = set_crear(set->size); // Inicializa salida
     if (set) { // Si el conjunto es no nulo
-        salida->size = set->size;
         for (; posicion < set->size; posicion ++)
             // Inserta una copia del intervalo dado al final de salida
             set_insertar_ultimo(&salida, interval_copy(set->intervalArray[posicion]));
@@ -127,120 +126,158 @@ Set set_unir(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 0, concatenado, *posicion;
     Interval *intervalInsertar = NULL, *intervalAux;
     Set salida = set_crear(set1->size + set2->size), setAux = NULL;
+    // Si el tamano de alguno de los conjuntos es 0
     if (!set1->size || !set2->size) {
         setAux = set1->size ? set1 : set2;
+        // Guarda en salida una copia del nodo cuyo tamano no es 0 o uno de ellos
+        // si ambos tienen tamano 0
         salida = set_copia(setAux);
-        return salida;
+        return salida; // Retorna salida
     }
     while (posicion1 < set1->size || posicion2 < set2->size) {
+        // Si el tamano de ambos conjuntos no es 0
         if (posicion1 < set1->size && posicion2 < set2->size) {
-            if (intervalInsertar) {
+            if (intervalInsertar) { // Si intervalInsertar no es nulo
                 concatenado = 0;
+                // Guarda en intervalAux la union de ambos conjuntos si es que
+                // resulta en un solo intervalo
                 intervalAux = interval_concat(intervalInsertar, set1->intervalArray[posicion1]);
-                if (intervalAux) {
+                if (intervalAux) { // Si intervalAux no es nulo
+                    // Destruye intervalInsertar
                     interval_destruir(&intervalInsertar);
                     intervalInsertar = intervalAux;
                     posicion1 ++;
                     concatenado = 1;
                 }
+                // Guarda en intervalAux la union de ambos intervalos si es que
+                // resulta en un solo intervalo
                 intervalAux = interval_concat(intervalInsertar, set2->intervalArray[posicion2]);
-                if (intervalAux) {
+                if (intervalAux) { // Si intervalAux no es nulo
+                    // Destruye intervalInsertar
                     interval_destruir(&intervalInsertar);
                     intervalInsertar = intervalAux;
                     posicion2 ++;
                     concatenado = 1;
                 }
                 if (!concatenado) {
+                    // Inserta intervalInsertar al final de salida
                     set_insertar_ultimo(&salida, intervalInsertar);
                     intervalInsertar = NULL;
                 }
             } else {
+                // Guarda en intervalInsertar la union de ambos intervalos si es que
+                // resulta en un solo intervalo
                 intervalInsertar = interval_concat(set1->intervalArray[posicion1], set2->intervalArray[posicion2]);
-                if (intervalInsertar) {
+                if (intervalInsertar) { // Si intervalInsertar no es nulo
                     posicion1 ++;
                     posicion2 ++;
-                } else if (interval_comparar(set1->intervalArray[posicion1], set2->intervalArray[posicion2]) < 0) {
-                    set_insertar_ultimo(&salida, interval_copy(set1->intervalArray[posicion1]));
-                    posicion1 ++;
                 } else {
-                    set_insertar_ultimo(&salida, interval_copy(set2->intervalArray[posicion2]));
-                    posicion2 ++;
+                    // Guarda en setAux el conjunto con el menor intervalo actual
+                    setAux = interval_comparar(set1->intervalArray[posicion1], set2->intervalArray[posicion2]) < 0 ? set1 : set2;
+                    // Guarda en posicion la posicion del conjunto con menor intervalo actual
+                    posicion = interval_comparar(set1->intervalArray[posicion1], set2->intervalArray[posicion2]) < 0 ? &posicion1 : &posicion2;
+                    // Inserta el intervalo actual de setAux al final de salida
+                    set_insertar_ultimo(&salida, interval_copy(setAux->intervalArray[*posicion]));
+                    (*posicion) ++;
                 }
             }
         } else {
+            // Guarda en setAux el conjunto que no se haya recorrido entero
             setAux = posicion1 < set1->size ? set1 : set2;
+            // Guarda en posicion la posicion del conjunto que no se haya recorrido entero
             posicion = posicion1 < set1->size ? &posicion1 : &posicion2;
-            if (intervalInsertar) {
+            if (intervalInsertar) { // Si intervalInsertar no es nulo
+                // Guarda en intervalAux la union de ambos intervalos si es que resulta
+                // en un solo intervalo
                 intervalAux = interval_concat(intervalInsertar, setAux->intervalArray[*posicion]);
-                if (intervalAux) {
-                    interval_destruir(&intervalInsertar);
-                    intervalInsertar = intervalAux;
+                if (intervalAux) { // Si intervalAux no es nulo
+                    interval_destruir(&intervalInsertar); // Destruye intervalInsertar
+                    intervalInsertar = intervalAux; // Guarda intervalAux en intervalInsertar
                     posicion ++;
                 } else {
+                    // Inserta intervalInsertar al final de salida
                     set_insertar_ultimo(&salida, intervalInsertar);
                     intervalInsertar = NULL;
                 }
             } else {
+                // Inserta el intervalo actual de setAux al final de salida
                 set_insertar_ultimo(&salida, interval_copy(setAux->intervalArray[*posicion]));
-                posicion ++;
+                (*posicion) ++;
             }
         }
     }
-    if (intervalInsertar)
+    if (intervalInsertar) // Si intervalInsertar no es nulo
+        // Inserta intervalInsertar al final de salida
         set_insertar_ultimo(&salida, intervalInsertar);
-    return salida;
+    return salida; // Retorna salida
 }
 
 Set set_intersecar(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 1, terminado;
     Interval *interseccion;
+    // Inicializa salida con un tamano uno mayor a la suma del tamano de los conjuntos
     Set salida = set_crear(set1->size + set2->size - 1);
-    if (!set1->size || !set2->size)
+    if (!set1->size || !set2->size) // Si el tamano de alguno de los conjuntos es 0
         return salida;
-    for (; posicion1 < set1->size && posicion2 <= set2->size; posicion1 ++) {
-        terminado = 0;
+    for (terminado = 0; posicion1 < set1->size && posicion2 <= set2->size; posicion1 ++) {
+        // Halla la posicion del menor intervalo del conjunto 2 que interseca 
+        // con el intervalo actual si es que existe
         posicion2 = buscar_inicio_interseccion(set2->intervalArray, set1->intervalArray[posicion1], posicion2, set2->size);
         while (posicion2 <= set2->size && !terminado) {
+            // Guarda en interseccion la interseccion entre los intervalos
             interseccion = interval_interseccion(set1->intervalArray[posicion1], set2->intervalArray[posicion2 - 1]);
-            if (interseccion) {
+            if (interseccion) { // SI interseccion no es nulo
+                // Inserta la interseccion al final del conjunto de salida
                 set_insertar_ultimo(&salida, interseccion);
                 posicion2 ++;
             } else
                 terminado = 1;
         }
-        if (posicion2 != 1)
+        if (posicion2 != 1) // Si posicion2 es diferente a la posicion inicial
           posicion2 --;
     }
     return salida;
 }
 
 Set set_restar(Set set1, Set set2) {
+    // Guarda en salida1 el complemento del conjunto2
     Set salida1 = set_complemento(set2);
+    // Guarda en salida2 la interseccion entre el conjunto1 y salida1
     Set salida2 = set_intersecar(set1, salida1);
+    // Destruye salida1 ya que era un conjunto auxiliar
     set_destruir(salida1);
-    return salida2;
+    return salida2; // Retorna salida2
 }
 
 Set set_complemento(Set set) {
     int posicion = 0, anterior = INT_MIN;
+    // Inicializa salida con un tamano uno mayor al conjunto
     Set salida = set_crear(set->size + 1);
     for (; posicion < set->size; posicion ++) {
+        // Si el extremo izquierdo del nodo actual es mayor a anterior
         if (interval_extremo_izq(set->intervalArray[posicion]) > anterior)
+            // Inserta el intervalo creado al final de salida
             set_insertar_ultimo(&salida, interval_crear(anterior, interval_extremo_izq(set->intervalArray[posicion]) - 1));
+        // Si el extremo derecho del intervalo es diferente a INT_MAX
         if (interval_extremo_der(set->intervalArray[posicion]) != INT_MAX)
+            // Le asigna a anterior el extremo derecho del intervalo mas uno
             anterior = interval_extremo_der(set->intervalArray[posicion]) + 1;
         else
+            // En caso contrario le asigna el extremo derecho del intervalo
             anterior = interval_extremo_der(set->intervalArray[posicion]);
     }
-    if (anterior != INT_MAX)
+    if (anterior != INT_MAX) // Si anterior es diferente a INT_MAX
+        // Inserta el intervalo creado al final de salida
         set_insertar_ultimo(&salida, interval_crear(anterior, INT_MAX));
-    return salida;
+    return salida; // Retorna salida
 }
 
 void set_imprimir(Set set) {
     int posicion = 0;
     while (posicion < set->size) {
+        // Imprime el intervalo actual
         interval_imprimir(set->intervalArray[posicion]);
+        // Si el intervalo actual no es el ultimo
         if (posicion < (set->size - 1))
             printf(", ");
         posicion ++;

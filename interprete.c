@@ -18,10 +18,11 @@ int hash(char clave) {
 char *leer_cadena(char **string) {
     char c;
     int pos = 0, size = LEN_MAX;
-    *string = malloc(sizeof(char) * size);
+    *string = malloc(sizeof(char) * size); // Pedimos memoria para string
     // Mientras que el caracter leido sea distinto a '\n'
     while ((c = getchar()) != '\n') {
         (*string)[pos++] = c; // Almacenamos el caracter en string
+        // Si el string se llena le damos mas memoria
         if (pos == LEN_MAX) {
             size = pos + LEN_MAX;
             *string = realloc(*string, sizeof(char) * size);

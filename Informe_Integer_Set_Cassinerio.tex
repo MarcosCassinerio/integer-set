@@ -1,0 +1,221 @@
+\documentclass[]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper]{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	framexleftmargin=5mm, frame=shadowbox, rulesepcolor=\color{gray}
+}
+
+\lstset{style=mystyle}
+%opening
+\begin{document}
+	
+\title{TP Conjunto De Enteros}
+\author{Cassinerio Marcos}
+\date{Junio 7, 2020\footnote{Updated \today}}
+\maketitle
+\newpage
+
+\section{Introducción}
+El objetivo de este trabajo fue implementar un conjunto de numeros enteros. Adicionalmente implemente un intérprete para poder crear conjuntos y manipularlos a partir de sus funciones basicas. 
+
+\section{Compilado y ejecucion}
+Para compilar el proyecto abro una terminal, y una vez ubicado en el directorio del proyecto, ejecuto el comando \verb|make|. Esto generará el ejecutable del intérprete.\\\\
+El mismo lo corro con: 
+
+\verb|./interprete|
+\\\\Este programa permitira ingresar comandos para crear conjuntos y manipularlos con sus funciones. Los comando aceptados son:
+ \begin{itemize}
+ 	\item \verb|alias = {1, 2, 3, ..., n}|: crea un conjunto con nombre alias y los elementos dados en el. Ej: \verb|A = {1, 2, 3, 5, 8, 6, 0}|.
+ 	\item \verb|alias = {var: x <= var <= y}|: crea un conjunto con nombre alias y el intervalo de enteros que va de 'x' a 'y' en el. Ej: \verb|A = {x: 1 <= x <= 5}|.
+ 	\item \verb|alias1 = alias2 l alias3|: crea un conjunto con nombre alias1 a partir de la union de los conjuntos con nombres alias2 y alias3. Ej: \verb|A = B l C|.
+ 	\item \verb|alias1 = alias2 & alias3|: crea un conjunto con nombre alias1 a partir de la interseccion de los conjuntos con nombres alias2 y alias3. Ej: \verb|A = B & C|.
+ 	\item \verb|alias1 = alias2 - alias3|: crea un conjunto con nombre alias1 a partir de la diferencia entre los conjuntos con nombres alias2 y alias3. Ej: \verb|A = B - C|.
+    \item \verb|alias1 = ~alias2|: crea un conjunto con nombre alias1 a partir del complemento del conjunto con nombre alias2. Ej: \verb|A = ~B|.
+ 	\item \verb|salir|: destruye todos los conjuntos creados y termina el programa.
+ \end{itemize}
+Los nombres de los conjuntos deben respetar el formato \verb|LetraNumero|. Ej: \verb|A113|.
+La cantidad de números después de la letra esta dada por una variable en el programa.
+\section{Organizacion de los archivos}
+El programa se divide en 4 partes: Interval, Set, TablaHash e intérprete\\
+Por un lado tenemos la implementación y declaración de Interval en los archivos \verb|interval.c| y \verb|interval.h| respectivamente.\\
+Por otro lado tenemos TablaHash hecho de la misma manera, en los archivos \verb|tablahash.c| y \verb|tablahash.h|.\\
+Luego tenemos al conjunto de numeros naturales que hace uso de las dependecias interval. Su implementación y declaración se encuentra en los archivos \verb|set.c| y \verb|set.h|.\\
+Finalmente tenemos en el archivo \verb|interprete.c| el intéprete que es nuestra interfaz del progragama para manipular los los conjuntos de numeros naturales.
+\newpage
+\section{Implementaciones y estructuras}
+\subsection{Interval}
+La declaración de interval es la siguiente:
+
+\begin{lstlisting}[language=C]
+struct _Interval{
+  double extremoIzq;
+  double extremoDer;
+};
+
+typedef struct _Interval Interval;
+\end{lstlisting}
+En su cabecera declaramos las siguientes funciones:
+
+\verb|interval_crear|
+
+\verb|interval_destruir|
+
+\verb|interval_extremo_izq|
+
+\verb|interval_extremo_der|
+
+\verb|interval_concat|
+
+\verb|interval_imprimir|
+
+\verb|interval_valido|
+
+\verb|interval_interseccion|
+
+\verb|interval_comparar|
+
+\verb|interval_copy|\\\\
+Sus implentaciones se encuentran en \verb|interval.c|.
+\subsection{Set}
+El conjunto de numeros enteros se encuentra definido de la siguiente manera:
+
+\begin{lstlisting}[language=C]
+struct _Set {
+    int size;
+    Interval **intervalArray;
+};
+
+typedef struct _Set *Set;
+
+\end{lstlisting}
+En su archivo cabecera se encuentran declaradas las siguientes funciones:
+
+\verb|set_crear|
+
+\verb|set_destruir|
+
+\verb|set_copia|
+
+\verb|set_insertar|
+
+\verb|set_unir|
+
+\verb|set_intersecar|
+
+\verb|set_restar|
+
+\verb|set_complemento|
+
+\verb|set_imprimir|\\\\
+Sus implementaciones se encuentran en el archivo \verb|itree.c|, junto con las implementaciones de las funciones:
+
+\verb|set_insertar_ultimo|
+
+\verb|buscar_inicio_interseccion|
+\subsection{TablaHash}
+La tablahash se encuentra definida junto a la casillahash y a contenedor de la siguiente manera:
+
+\begin{lstlisting}[language=C]
+struct _TablaHash {
+  CasillaHash *tabla;
+  unsigned numElems;
+  unsigned capacidad;
+  unsigned profundidad;
+  FuncionHash hash;
+};
+
+typedef struct _TablaHash TablaHash;
+
+struct _CasillaHash {
+  char clave;
+  void *dato;
+};
+
+typedef struct _CasillaHash CasillaHash;
+
+struct _Contenedor {
+  void *dato;
+};
+
+typedef struct _Contenedor Contenedor;
+
+\end{lstlisting}
+En su archivo cabecera se encuentran declaradas las siguientes funciones:
+
+\verb|set_crear|
+
+\verb|set_destruir|
+
+\verb|set_copia|
+
+\verb|set_insertar|
+
+\verb|set_unir|
+
+\verb|set_intersecar|
+
+\verb|set_restar|
+
+\verb|set_complemento|
+
+\verb|set_imprimir|\\\\
+Sus implementaciones se encuentran en el archivo \verb|itree.c|, junto con las implementaciones de las funciones:
+
+\verb|set_insertar_ultimo|
+
+\verb|buscar_inicio_interseccion|
+
+\subsection{Interprete}
+El interprete se encuentra el main del programa, este se encarga de leer la entrada estandar, validarla, ejecutar las funciones de Set e intervalo según la entrada y guardar los conjuntos creados a partir de las funciones de TablaHash. En este archivo estan implementadas las siguientes funciones:
+
+\verb|hash|
+
+\verb|leer_cadena|
+
+\verb|leer_extension|
+
+\verb|leer_comprension|
+
+\verb|obtenerConjuntoDestino|
+
+\verb|obtenerPrimerConjunto|
+
+\verb|obtenerUltimoConjunto|
+
+\section{Desarrollo y complicaciones}
+Antes de empezar con la implementacion de conjunto tuve que averiguar como representar los elementos ya que si habia elementos contiguos los deberia representar como un intervalo cuando el usuario quisiera imprimir el conjunto. Debido a esto tuve que que implementar interval antes de seguir con el conjunto. 
+
+Luego implemente al conjunto como un arbol AVL ya que me permitia mantener los elementos ordenados e insertarlos de una manera eficiente. Mientras hacia la funcion insertar, note que si habian iontervalos dentro del arbol que intersecaran con el intervalo a borrar, en algunos casos, al intentar borrar dichos nodos el arbol se desbalanceaba ya que la busqueda del nodo a eliminar no comenzaba desde la raiz lo que provocaba que el balanceo no se hiciera en todo el arbol. La manera que se me ocurrio de arreglarlo era haciendo una funcion que elimine de un arbol el primer nodo que interseque con el intervalo proporcionado. La desventaja de esto era que si ese intervalo intersecaba con varios intervalos del arbol, deberia llamar n veces a esta funcion lo que conllevaria reccorer n veces el arbol lo cual seria muy ineficiente. Teniendo en cuenta que varias de las funciones a implementar si no es que todas usarian la funcion insertar (la cual era muy ineficiente) decidi cambiar a otro tipo de implementacion. Opte por implementar al conjunto como un tipo de dato que tuviera un array de intervalos y su tamano. El cual despues de haber investigado note que era mucho mas eficiente que el arbol AVL.
+
+Habiendo terminado el conjunto, comence con la implementacion de la tablahash. Para hacer esta tome como punto de partida el archivo proporcionado en el campus. Primero que nada queria saber como guardaria los conjuntos alli, asi que decidi hacer que el nombre de los conjuntos mantengan un formato, el cual seria \verb|LetraNumero|. Para esto, deje definida la cantidad de numeros que habria despues de la letra, para que se puedan crear una mayor cantidad de conjuntos si uno lo desease. Haciendo esto, podria mantener un mejor orden en la tablahash y un mejor manejo de la memoria, ya que podria crear una tablahash por cada caracter del nombre.
+Por ejemplo, si el nombre fuese \verb|A15|, habria una primera tabla hash con 26 casillas disponibles (una por cada letra), en la cual, aplicandole la funcion de hasheo obtendria la posicion en la que insertaria la letra \verb|A|, en el dato de esta casilla habria una tabla con 10 posiciones (una por cada digito), en la cual, aplicandole la funcion de hasheo obtendria la posicion en la que insertaria el numero \verb|1| e igual que en el caso anterior en el dato de esta casilla habria una ultima tablahash tambien con 10 elementos donde en la posicion dada aplicando la funcion de hasheo al numero \verb|5| estaria el conjunto creado con ese alias.
+
+Habiendo terminado la implementacion de conjunto y de tablahash, decidi hacer el interprete para poder testear mejor todas las funciones y verificar que funcione el programa. Este me tomo mucho tiempo ya que habia muchos comandos a implementar y tuve unas cuantas complicaciones para leer los alias de los conjuntos. Haber tomado un formato para cada comando, hizo que hacer el interprete no tuviese tantas complicaciones.
+\newpage
+\section{Bibliografia}
+\url{http://www.cplusplus.com/reference/cstdlib/strtol/}\\
+\end{document}
