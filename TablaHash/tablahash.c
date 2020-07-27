@@ -5,22 +5,135 @@ struct _Contenedor {
 };
 
 struct _CasillaHash {
-  char clave;
+  char *clave;
   void *dato;
 };
 
+struct _LinkedList {
+  CasillaHash casilla;
+  struct _LinkedList *ant;
+  struct _LinkedList *sig;
+};
+
 struct _TablaHash {
-  CasillaHash *tabla;
+  LinkedList **tabla;
   unsigned numElems;
   unsigned capacidad;
-  unsigned profundidad;
   FuncionHash hash;
 };
 
+/*
+  contenedor_crear: void* -> Contenedor*
+  Retorna un contenedor con el dato proporcionado en el.
+*/
 Contenedor *contenedor_crear(void *dato) {
   Contenedor *contenedor = malloc(sizeof(Contenedor)); // Pedimos memoria
   contenedor->dato = dato; // Le asignamos el dato dado
   return contenedor; // Retornamos el contenedor
+}
+
+/*
+  linked_list_crear: CasillaHash -> LinkedList*
+  Retorna una linkedList que apunta a si misma con la casilla proporcionada en el.
+*/
+LinkedList *linked_list_crear(CasillaHash casilla) {
+  LinkedList *lista = malloc(sizeof(LinkedList)); // Pide memoria para la lista
+  lista->casilla = casilla; // Le asigna la casilla a la lista
+  // Hace que la lista apunte a si misma
+  lista->ant = lista;
+  lista->sig = lista;
+  return lista; // Retorna la misma lista
+}
+
+/*
+  linked_list_insertar: LinkedList** CasillaHash
+  Inserta la casilla proporcionada en la lista si es que no hay una con su clave,
+  en caso contrario cambia su dato
+*/
+void linked_list_insertar(LinkedList **lista, CasillaHash casilla, FuncionVisitante funcion) {
+  // Inicializa aux en la posicion actual de lista
+  LinkedList *nodo = NULL, *aux = *lista;
+  int insertado = 0;
+
+  if (!lista || !(*lista)) // Si lista no es nulo
+    // Inicializa lista con la casilla
+    *lista = linked_list_crear(casilla);
+  else {
+    for(; aux != (*lista)->ant && !insertado; aux = aux->sig) {
+      // Si la clave de la casilla actual coincide con la clave dada
+      if (aux->casilla.clave == casilla.clave) {
+        // Reemplaza el dato de la casilla actual
+        funcion(aux->casilla.dato);
+        aux->casilla.dato = casilla.dato;
+        insertado = 1;
+      }
+    }
+    if (!insertado) { // Si el dato no fue insertado
+      // Si la clave de la casilla actual coincide con la clave dada
+      if (aux->casilla.clave == casilla.clave) {
+        funcion(aux->casilla.dato);
+        // Reemplaza el dato de la casilla actual
+        aux->casilla.dato = casilla.dato;
+      } else {
+        // Inserta el nuevo nodo al final de la lista
+        nodo = linked_list_crear(casilla);
+        nodo->ant = aux;
+        nodo->sig = *lista;
+        aux->sig = nodo;
+        (*lista)->ant = nodo;
+      }
+    }
+  }
+}
+
+/*
+  linked_lista_buscar: LinkedList* char* -> void*
+  Retorna el dato de la lista que tiene la clave proporcionada si es que existe,
+  en caso contrario retorna NULL
+*/
+void *linked_list_buscar(LinkedList *lista, char *clave) {
+  LinkedList *salida = NULL, *aux = lista;
+
+  if (!lista)
+    return NULL;
+
+  for (; !salida && aux != lista->ant; aux = aux->sig) {
+    // Si la clave de aux coincide con la clave proporcionada
+    if (aux->casilla.clave == clave)
+      salida = aux; // Guarda aux en sa;oda
+  }
+
+  // Si salida no es null retorna su dato, en caso contrario chequea si
+  // la clave proporcionada coincide con la clave del ultimo retorna su dato
+  // sino retorna NULL
+  return salida ? salida->casilla.dato : (aux->casilla.clave == clave) ? aux->casilla.dato : NULL;
+}
+
+/*
+  linked_list_eliminar: LinkedList**
+  Destruye la linkedList junto con sus datos.
+*/
+void linked_list_eliminar(LinkedList **lista, FuncionVisitante funcion) {
+  LinkedList *aux;
+  for (; (*lista); (*lista) = (*lista)->sig) {
+    aux = NULL;
+    if ((*lista) != (*lista)->sig) { // Si la lista no tiene un solo elemento
+      // Guarda en aux la posicion siguiente de lista
+      aux = (*lista)->sig;
+      (*lista)->ant->sig = aux;
+      aux->ant = (*lista)->ant;
+    }
+
+    // Elimina la posicion actual de la lista junto a su dato
+    funcion((*lista)->casilla.dato);
+    free(*lista);
+
+    if (aux) { // Si aux no es nulo
+      // Guardamos aux en lista
+      (*lista) = aux;
+      aux = NULL;
+    }
+  }
 }
 
 void *contenedor_obtener_dato(Contenedor *contenedor) {
@@ -28,111 +141,53 @@ void *contenedor_obtener_dato(Contenedor *contenedor) {
   return contenedor ? contenedor->dato : NULL;
 }
 
-TablaHash *tablahash_crear(FuncionHash hash, unsigned profundidad) {
+TablaHash *tablahash_crear(FuncionHash hash, unsigned capacidad) {
   // Pedimos memoria para la estructura principal.
   TablaHash *tabla = malloc(sizeof(TablaHash));
   unsigned idx = 0;
   // Asignamos sus valores
   tabla->numElems = 0;
-  tabla->profundidad = profundidad;
   tabla->hash = hash;
-
-  // Dependiendo de su profundidad asigna la capacidad a la tabla
-  if (profundidad == PROFUNDIDAD_MAXIMA) {
-    tabla->capacidad = capacidadTH1;
-  } else {
-    tabla->capacidad = capacidadTH2;
-  }
+  tabla->capacidad = capacidad;
 
   // Pedimos memoria para las casillas de la tabla
-  tabla->tabla = malloc(sizeof(CasillaHash) * tabla->capacidad);
+  tabla->tabla = malloc(sizeof(CasillaHash) * capacidad);
 
   // Inicializamos las casillas con datos nulos.
   for (; idx < tabla->capacidad; ++idx) {
-    tabla->tabla[idx].clave = ' ';
-    tabla->tabla[idx].dato = NULL;
+    tabla->tabla[idx] = NULL;
   }
 
   return tabla; // Retornamos la tabla
 }
 
-void tablahash_insertar(TablaHash *tabla, char *clave, void *dato) {
+void tablahash_insertar(TablaHash *tabla, char *clave, void *dato, FuncionVisitante funcion) {
   unsigned idx;
-  // Si la clave en esa posicion es una letra guarda su mayuscula
-  if (isalpha(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]) != 0)
-    clave[PROFUNDIDAD_MAXIMA - tabla->profundidad] = toupper(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   // Guarda la posicion donde insertara el dato.
-  idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
+  idx = tabla->hash(clave);
   idx = idx % tabla->capacidad;
 
-  if (tabla->profundidad == 0) { // Si la profundidad es 0
-    if (tabla->tabla[idx].clave == ' ') // Si la clave es un espacio
-      tabla->numElems ++; // Aumenta en uno la cantidad de elementos
-    // Le asigna la clave a la casilla dada
-    tabla->tabla[idx].clave = clave[PROFUNDIDAD_MAXIMA - tabla->profundidad];
-    tabla->tabla[idx].dato = dato; // Le asigna el dato dado
-  } else {
-    if (tabla->tabla[idx].clave == ' ') { // Si la clave es un espacio
-      tabla->numElems ++; // Aumenta en uno la cantidad de elementos
-      // Crea una tabla y la inserta en el dato de la casilla
-      tabla->tabla[idx].dato = tablahash_crear(tabla->hash, tabla->profundidad - 1);
-    }
-    // Le asigna la clave a la casilla dada
-    tabla->tabla[idx].clave = clave[PROFUNDIDAD_MAXIMA - tabla->profundidad];
-    // Inserta el dato en la casilla de la tabla
-    tablahash_insertar(tabla->tabla[idx].dato, clave, dato);
-  }
+  // Crea la casilla con los datos proporcionados
+  CasillaHash casilla;
+  casilla.clave = clave;
+  casilla.dato = dato;
+
+  // Inserta la casilla en la posicion dada de la tabla si es que no hay una 
+  // con la misma clave, en ese caso, reemplaza su dato
+  linked_list_insertar(&(tabla->tabla[idx]), casilla, funcion);
 }
 
 Contenedor *tablahash_buscar(TablaHash *tabla, char *clave) {
-  unsigned idx;
-  // Si la clave en esa posicion es una letra guarda su mayuscula
-  if (isalpha(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]) != 0)
-    clave[PROFUNDIDAD_MAXIMA - tabla->profundidad] = toupper(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
   // Guarda la posicion donde buscara el dato.
-  idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
+  unsigned idx = tabla->hash(clave);
   idx = idx % tabla->capacidad;
 
-  if (tabla->profundidad == 0) { // Si la profundidad es 0
-    if (tabla->tabla[idx].clave != ' ') // Si la clave no es un espacio
-      // Retorna un contenedor con el dato en el
-      return contenedor_crear(tabla->tabla[idx].dato);
-  } else {
-    if (tabla->tabla[idx].clave != ' ') // Si la clave no es un espacio
-      // Retorna la llamada a la funcion con el dato de la casilla
-      return tablahash_buscar(tabla->tabla[idx].dato, clave);
-  }
-  return NULL; // Retorna NULL
-}
+  // Guarda en dato el dato de la lista cuya clave es igual a la clave proporcionada
+  void *dato = linked_list_buscar(tabla->tabla[idx], clave);
 
-void tablahash_eliminar(TablaHash *tabla, char *clave, FuncionVisitante funcion) {
-  TablaHash *tablaAux;
-  unsigned idx;
-    // Si la clave en esa posicion es una letra guarda su mayuscula
-  if (isalpha(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]) != 0)
-    clave[PROFUNDIDAD_MAXIMA - tabla->profundidad] = toupper(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
-  // Guarda la posicion de donde eliminara el dato.
-  idx = tabla->hash(clave[PROFUNDIDAD_MAXIMA - tabla->profundidad]);
-  idx = idx % tabla->capacidad;
-
-  if (tabla->profundidad == 0) { // Si la profundidad es 0
-    if (tabla->tabla[idx].clave != ' ') { // Si la clave no es un espacio
-      tabla->numElems --; // Disminuye la cantidad de elementos en uno
-      tabla->tabla[idx].clave = ' '; // Le asigna un espacio a la clave
-      funcion(tabla->tabla[idx].dato);  // Destruye el dato de la casilla
-    }
-  } else {
-    if (tabla->tabla[idx].clave != ' ') { // Si la clave no es un espacio
-      tablaAux = tabla->tabla[idx].dato; 
-      // Llama a la funcion en el dato de la casilla de la tabla
-      tablahash_eliminar(tablaAux, clave, funcion);
-      if (tablaAux->numElems == 0) { // Si el numero de elementos es 0
-        tabla->numElems --; // Disminuye la cantidad de elementos en uno
-        tabla->tabla[idx].clave = ' '; // Le asigna un espacio a la clave
-        tablahash_destruir(tablaAux); // Llama a tablahash_destruir en la tabla
-      }
-    }
-  }
+  // Si el dato no es nulo retorna un contenedor con el dato en el, en caso 
+  // contrario retorna NULL
+  return dato ? contenedor_crear(dato) : NULL;
 }
 
 void tablahash_destruir(TablaHash* tabla) {
@@ -145,16 +200,10 @@ void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {
   unsigned idx = 0;
 
   for (; idx < tabla->capacidad && tabla->numElems; idx ++) {
-    // Si la clave no es un espacio
-    if (tabla->tabla[idx].clave != ' ') {
-      tabla->numElems --; // Disminuye la cantidad de elementos en uno
-      if (tabla->profundidad == 0) // Si la profundidad es 0
-        // Destruye el dato de la casilla
-        funcion(tabla->tabla[idx].dato);
-      else
-        // Llama a la funcion en el dato de la casilla
-        tablahash_destruir_entera(tabla->tabla[idx].dato, funcion);
-    }
+    tabla->numElems --;
+    if (tabla->tabla[idx]) // Si la tabla en dada posicion no es nula
+      // Destruyo la linked list de la tabla en dada posicion
+      linked_list_eliminar(&(tabla->tabla[idx]), funcion);
   }
 
   // Destruye la tabla

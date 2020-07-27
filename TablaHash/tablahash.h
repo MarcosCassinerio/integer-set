@@ -4,18 +4,17 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "../Set/set.h"
-#define capacidadTH1 26
-#define capacidadTH2 10
-#define PROFUNDIDAD_MAXIMA 4
+#include <stdio.h>
 
-typedef int (*FuncionHash) (char clave);
+typedef int (*FuncionHash) (char* clave);
 
 typedef void (*FuncionVisitante) (void *dato);
 
 typedef struct _Contenedor Contenedor;
 
 typedef struct _CasillaHash CasillaHash;
+
+typedef struct _LinkedList LinkedList;
 
 typedef struct _TablaHash TablaHash;
 
@@ -29,15 +28,15 @@ void *contenedor_obtener_dato(Contenedor *contenedor);
 
 /*
   tablahash_crear: FuncionHash unsigned -> TablaHash*
-  Crea una nueva tabla Hash vacía, con la profundidad dada.
+  Crea una nueva tabla Hash vacía, con la capacidad dada.
 */
-TablaHash* tablahash_crear(FuncionHash hash, unsigned profundidad);
+TablaHash* tablahash_crear(FuncionHash hash, unsigned capacidad);
 
 /*
   tablahash_insertar: TablaHash* char* void*
   Inserta el dato en la tabla, asociado a la clave dada.
 */
-void tablahash_insertar(TablaHash* tabla, char *clave, void* dato);
+void tablahash_insertar(TablaHash* tabla, char *clave, void* dato, FuncionVisitante funcion);
 
 /*
   tablahash_buscar: TablaHash* char* -> Contenedor*
@@ -45,12 +44,6 @@ void tablahash_insertar(TablaHash* tabla, char *clave, void* dato);
   En caso de no existir, se retorna un contenedor nulo.
 */
 Contenedor *tablahash_buscar(TablaHash* tabla, char *clave);
-
-/*
-  tablahash_eliminar: TablaHash* char* FuncionVisitante
-  Elimina un elemento de la tabla con una funcion dada a partir de una clave.
-*/
-void tablahash_eliminar(TablaHash* tabla, char *clave, FuncionVisitante funcion);
 
 /*
   tablahash_destruir: TablaHash*
