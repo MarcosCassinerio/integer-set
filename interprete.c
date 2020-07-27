@@ -174,6 +174,8 @@ int main() {
     while (strcmp(leer_cadena(&buffer), "salir\0")) {
         correcto = 1;
         operacion = ' ';
+        setDestino = NULL;
+        aux = NULL;
         // checkear si es imprimir
         if (strncmp(buffer, "imprimir ", 9) == 0) {
             obtenerUltimoConjunto(buffer, &conjuntoDestino, 9);
@@ -215,7 +217,6 @@ int main() {
                         }
                         else
                             correcto = 0;
-                        setDestino = NULL;
                     }
                 // checkear si la operacion es complemento
                 } else if (buffer[pos] == '~') {

@@ -61,7 +61,7 @@ void linked_list_insertar(LinkedList **lista, CasillaHash casilla, FuncionVisita
   else {
     for(; aux != (*lista)->ant && !insertado; aux = aux->sig) {
       // Si la clave de la casilla actual coincide con la clave dada
-      if (aux->casilla.clave == casilla.clave) {
+      if (strcmp(aux->casilla.clave, casilla.clave) == 0) {
         // Reemplaza el dato de la casilla actual
         funcion(aux->casilla.dato);
         aux->casilla.dato = casilla.dato;
@@ -70,7 +70,7 @@ void linked_list_insertar(LinkedList **lista, CasillaHash casilla, FuncionVisita
     }
     if (!insertado) { // Si el dato no fue insertado
       // Si la clave de la casilla actual coincide con la clave dada
-      if (aux->casilla.clave == casilla.clave) {
+      if (strcmp(aux->casilla.clave, casilla.clave) == 0) {
         funcion(aux->casilla.dato);
         // Reemplaza el dato de la casilla actual
         aux->casilla.dato = casilla.dato;
@@ -99,14 +99,14 @@ void *linked_list_buscar(LinkedList *lista, char *clave) {
 
   for (; !salida && aux != lista->ant; aux = aux->sig) {
     // Si la clave de aux coincide con la clave proporcionada
-    if (aux->casilla.clave == clave)
-      salida = aux; // Guarda aux en sa;oda
+    if (strcmp(aux->casilla.clave, clave) == 0)
+      salida = aux; // Guarda aux en salida
   }
 
   // Si salida no es null retorna su dato, en caso contrario chequea si
   // la clave proporcionada coincide con la clave del ultimo retorna su dato
   // sino retorna NULL
-  return salida ? salida->casilla.dato : (aux->casilla.clave == clave) ? aux->casilla.dato : NULL;
+  return salida ? salida->casilla.dato : (strcmp(aux->casilla.clave, clave) == 0) ? aux->casilla.dato : NULL;
 }
 
 /*
@@ -124,7 +124,8 @@ void linked_list_eliminar(LinkedList **lista, FuncionVisitante funcion) {
       aux->ant = (*lista)->ant;
     }
 
-    // Elimina la posicion actual de la lista junto a su dato
+    // Elimina la posicion actual de la lista junto a su dato y clave
+    free((*lista)->casilla.clave);
     funcion((*lista)->casilla.dato);
     free(*lista);
 
@@ -169,7 +170,8 @@ void tablahash_insertar(TablaHash *tabla, char *clave, void *dato, FuncionVisita
 
   // Crea la casilla con los datos proporcionados
   CasillaHash casilla;
-  casilla.clave = clave;
+  casilla.clave = malloc(sizeof(char) * strlen(clave));
+  strcpy(casilla.clave, clave);
   casilla.dato = dato;
 
   // Inserta la casilla en la posicion dada de la tabla si es que no hay una 
