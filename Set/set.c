@@ -97,8 +97,10 @@ void set_insertar(Set *set, Interval *interval) {
             } else {
                 intervalAux = interval_concat(interval, (*set)->intervalArray[posicion]);
                 if (intervalAux) { // Si intervalAux es no nulo
-                    posicion ++;
                     interval_destruir(&interval); // Destruye interval
+                    // Destruye el intervalo actual del conjunto
+                    interval_destruir(&((*set)->intervalArray[posicion]));
+                    posicion ++;
                     interval = intervalAux;
                 // Si el intervalo del conjunto es menor a interval
                 } else if (interval_comparar((*set)->intervalArray[posicion], interval) < 0){
