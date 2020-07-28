@@ -195,7 +195,7 @@ Set set_unir(Set set1, Set set2) {
                 if (intervalAux) { // Si intervalAux no es nulo
                     interval_destruir(&intervalInsertar); // Destruye intervalInsertar
                     intervalInsertar = intervalAux; // Guarda intervalAux en intervalInsertar
-                    posicion ++;
+                    (*posicion) ++;
                 } else {
                     // Inserta intervalInsertar al final de salida
                     set_insertar_ultimo(&salida, intervalInsertar);
