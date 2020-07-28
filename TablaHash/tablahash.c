@@ -115,7 +115,7 @@ void *linked_list_buscar(LinkedList *lista, char *clave) {
 */
 void linked_list_eliminar(LinkedList **lista, FuncionVisitante funcion) {
   LinkedList *aux;
-  for (; (*lista); (*lista) = (*lista)->sig) {
+  while (*lista) {
     aux = NULL;
     if ((*lista) != (*lista)->sig) { // Si la lista no tiene un solo elemento
       // Guarda en aux la posicion siguiente de lista
@@ -128,6 +128,7 @@ void linked_list_eliminar(LinkedList **lista, FuncionVisitante funcion) {
     free((*lista)->casilla.clave);
     funcion((*lista)->casilla.dato);
     free(*lista);
+    *lista = NULL;
 
     if (aux) { // Si aux no es nulo
       // Guardamos aux en lista
@@ -168,9 +169,12 @@ void tablahash_insertar(TablaHash *tabla, char *clave, void *dato, FuncionVisita
   idx = tabla->hash(clave);
   idx = idx % tabla->capacidad;
 
+  if (!tabla->tabla[idx])
+     tabla->numElems ++;
+
   // Crea la casilla con los datos proporcionados
   CasillaHash casilla;
-  casilla.clave = malloc(sizeof(char) * strlen(clave));
+  casilla.clave = malloc(sizeof(char) * (strlen(clave) + 1));
   strcpy(casilla.clave, clave);
   casilla.dato = dato;
 
@@ -202,10 +206,11 @@ void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {
   unsigned idx = 0;
 
   for (; idx < tabla->capacidad && tabla->numElems; idx ++) {
-    tabla->numElems --;
-    if (tabla->tabla[idx]) // Si la tabla en dada posicion no es nula
+    if (tabla->tabla[idx]) { // Si la tabla en dada posicion no es nula
       // Destruyo la linked list de la tabla en dada posicion
       linked_list_eliminar(&(tabla->tabla[idx]), funcion);
+      tabla->numElems --;
+    }
   }
 
   // Destruye la tabla
