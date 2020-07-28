@@ -141,7 +141,7 @@ La tablahash se encuentra definida junto a la casillahash y a contenedor de la s
 
 \begin{lstlisting}[language=C]
 struct _TablaHash {
-  CasillaHash *tabla;
+  LinkedList **tabla;
   unsigned numElems;
   unsigned capacidad;
   unsigned profundidad;
@@ -150,8 +150,16 @@ struct _TablaHash {
 
 typedef struct _TablaHash TablaHash;
 
+struct _LinkedList {
+  CasillaHash casilla;
+  struct _LinkedList *ant;
+  struct _LinkedList *sig;
+};
+
+typedef struct _LinkedList LinkedList;
+
 struct _CasillaHash {
-  char clave;
+  char *clave;
   void *dato;
 };
 
@@ -166,28 +174,26 @@ typedef struct _Contenedor Contenedor;
 \end{lstlisting}
 En su archivo cabecera se encuentran declaradas las siguientes funciones:
 
-\verb|set_crear|
+\verb|contenedor_obtener_dato|
 
-\verb|set_destruir|
+\verb|tablahash_crear|
 
-\verb|set_copia|
+\verb|tablahash_insertar|
 
-\verb|set_insertar|
+\verb|tablahash_buscar|
 
-\verb|set_unir|
+\verb|tablahash_destruir_entera|\\\\
+Sus implementaciones se encuentran en el archivo \verb|tablahash.c|, junto con las implementaciones de las funciones:
 
-\verb|set_intersecar|
+\verb|contenedor_crear|
 
-\verb|set_restar|
+\verb|linked_list_insertar|
 
-\verb|set_complemento|
+\verb|linked_list_buscar|
 
-\verb|set_imprimir|\\\\
-Sus implementaciones se encuentran en el archivo \verb|itree.c|, junto con las implementaciones de las funciones:
+\verb|linked_list_eliminar|
 
-\verb|set_insertar_ultimo|
-
-\verb|buscar_inicio_interseccion|
+\verb|tablahash_destruir|
 
 \subsection{Interprete}
 El interprete se encuentra el main del programa, este se encarga de leer la entrada estandar, validarla, ejecutar las funciones de Set e intervalo según la entrada y guardar los conjuntos creados a partir de las funciones de TablaHash. En este archivo estan implementadas las siguientes funciones:
@@ -211,11 +217,9 @@ Antes de empezar con la implementacion de conjunto tuve que averiguar como repre
 
 Luego implemente al conjunto como un arbol AVL ya que me permitia mantener los elementos ordenados e insertarlos de una manera eficiente. Mientras hacia la funcion insertar, note que si habian iontervalos dentro del arbol que intersecaran con el intervalo a borrar, en algunos casos, al intentar borrar dichos nodos el arbol se desbalanceaba ya que la busqueda del nodo a eliminar no comenzaba desde la raiz lo que provocaba que el balanceo no se hiciera en todo el arbol. La manera que se me ocurrio de arreglarlo era haciendo una funcion que elimine de un arbol el primer nodo que interseque con el intervalo proporcionado. La desventaja de esto era que si ese intervalo intersecaba con varios intervalos del arbol, deberia llamar n veces a esta funcion lo que conllevaria reccorer n veces el arbol lo cual seria muy ineficiente. Teniendo en cuenta que varias de las funciones a implementar si no es que todas usarian la funcion insertar (la cual era muy ineficiente) decidi cambiar a otro tipo de implementacion. Opte por implementar al conjunto como un tipo de dato que tuviera un array de intervalos y su tamano. El cual despues de haber investigado note que era mucho mas eficiente que el arbol AVL.
 
-Habiendo terminado el conjunto, comence con la implementacion de la tablahash. Para hacer esta tome como punto de partida el archivo proporcionado en el campus. Primero que nada queria saber como guardaria los conjuntos alli, asi que decidi hacer que el nombre de los conjuntos mantengan un formato, el cual seria \verb|LetraNumero|. Para esto, deje definida la cantidad de numeros que habria despues de la letra, para que se puedan crear una mayor cantidad de conjuntos si uno lo desease. Haciendo esto, podria mantener un mejor orden en la tablahash y un mejor manejo de la memoria, ya que podria crear una tablahash por cada caracter del nombre.
-Por ejemplo, si el nombre fuese \verb|A15|, habria una primera tabla hash con 26 casillas disponibles (una por cada letra), en la cual, aplicandole la funcion de hasheo obtendria la posicion en la que insertaria la letra \verb|A|, en el dato de esta casilla habria una tabla con 10 posiciones (una por cada digito), en la cual, aplicandole la funcion de hasheo obtendria la posicion en la que insertaria el numero \verb|1| e igual que en el caso anterior en el dato de esta casilla habria una ultima tablahash tambien con 10 elementos donde en la posicion dada aplicando la funcion de hasheo al numero \verb|5| estaria el conjunto creado con ese alias.
+Habiendo terminado el conjunto, comence con la implementacion de la tablahash. Para hacer esta tome como punto de partida el archivo proporcionado en el campus. Primero que nada queria saber como guardaria los conjuntos alli teniendo en cuenta que aplicando la tablahash al nombre de 2 conjuntos puede que obtenga el mismo valor, por los que los conjuntos se guardarian en el mismo lugar. Para resolver ese problema implemente una LinkedList dentro de tablahash, de esta manera, en la posicion de la tablahash donde guardaria los cunjuntos habria una LinkedList con todos los conjuntos que aplicandole la funcion de hasheo retornaran el mismo valor.
 
-Habiendo terminado la implementacion de conjunto y de tablahash, decidi hacer el interprete para poder testear mejor todas las funciones y verificar que funcione el programa. Este me tomo mucho tiempo ya que habia muchos comandos a implementar y tuve unas cuantas complicaciones para leer los alias de los conjuntos. Haber tomado un formato para cada comando, hizo que hacer el interprete no tuviese tantas complicaciones.
-\newpage
+Habiendo terminado la implementacion de conjunto y de tablahash, decidi hacer el interprete para poder testear mejor todas las funciones y verificar que funcione el programa. Este me tomo mucho tiempo ya que habia muchos comandos a implementar. Haber tomado un formato para cada comando, hizo que hacer el interprete no tuviese tantas complicaciones.
 \section{Bibliografia}
 \url{http://www.cplusplus.com/reference/cstdlib/strtol/}\\
 \end{document}
