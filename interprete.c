@@ -216,12 +216,12 @@ int main() {
     TablaHash *th = tablahash_crear(hash, TAMANO_TH);
     Contenedor *contenedor = NULL;
     int pos, correcto;
-    printf("Crear conjunto por extension: 'A = {-2, 5, 7, -9}'\n");
-    printf("Crear conjunto por comprension: 'A = {x: -9 <= x <= 42}'\n");
+    printf("Crear conjunto por extension: 'A = {-2,5,7,-9}'\n");
+    printf("Crear conjunto por comprension: 'A = {x : -9 <= x <= 42}'\n");
     printf("Unir conjuntos: 'A = A | A1'\n");
     printf("Intersecar conjuntos: 'A = A & A1'\n");
     printf("Restar conjuntos: 'A = A - A1'\n");
-    printf("Complemento de conjuntos: 'A = ~A'\n");
+    printf("Complemento de conjuntos: 'A = ~ A'\n");
     printf("Imprimir conjuntos: 'imprimir A'\n");
     printf("Cerrar el interprete: 'salir'\n");
     // Mientras que buffer sea distino de "salir"
@@ -262,7 +262,7 @@ int main() {
                 // Si el caracter actual de buffer es '{'
                 if (buffer[pos] == '{') {
                     // Si buffer cumple cierto formato
-                    if (isalpha(buffer[pos + 1]) != 0 && buffer[pos + 2] == ' ' && buffer[pos + 3] == ':' && buffer[pos + 4] == ' ') {
+                    if (isalpha(buffer[pos + 1]) != 0 && strncmp(buffer + pos + 2, " : ", 3) == 0) {
                         // Guarda en aux el intervalo leido de buffer
                         aux = leer_comprension(buffer, pos + 5, buffer[pos + 1]);
                         if (aux) { // Si aux no es nulo
@@ -285,15 +285,17 @@ int main() {
                             correcto = 0;
                     }
                 // Si buffer cumple cierto formato
-                } else if (strncmp(buffer, "~ ", 2) == 0 ) {
+                } else if (strncmp(buffer + pos, "~ ", 2) == 0) {
                     // Lee el nombre del conjunto y lo guarda en conjuntoUno
                     obtenerUltimoConjunto(buffer, &conjuntoUno, pos + 2);
                     // Si se leyo correctamente buffer
                     if (conjuntoUno[0] != '\0')
                         // Guarda la posicion actual de buffer en operacion
                         operacion = buffer[pos];
-                    else
+                    else {
+                        free(conjuntoUno);
                         correcto = 0;
+                    }
                 } else {
                     // Lee el nombre del conjunto y lo guarda en conjuntoUno
                     pos = obtenerPrimerConjunto(buffer, &conjuntoUno, pos);
@@ -318,8 +320,10 @@ int main() {
                             // En caso contrario libera la memoria de conjuntoUno
                             free(conjuntoUno);
                         }
-                    } else
+                    } else {
+                        free(conjuntoUno);
                         correcto = 0;
+                    }
                 }
                 // Si la operaciones diferente de un espacio
                 if (operacion != ' ') {
@@ -387,7 +391,7 @@ int main() {
             }
             free(conjuntoDestino); // Libera la memoria de conjuntoDestino
         }
-        if (correcto == 0)
+        if (correcto == 0) // Si se leyo incorrectamente buffer
             printf("Formato Incorrecto\n");
         free(buffer); // Libera la memoria de buffer
     }
