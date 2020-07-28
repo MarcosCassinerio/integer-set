@@ -230,141 +230,169 @@ int main() {
         operacion = ' ';
         setDestino = NULL;
         aux = NULL;
-        // checkear si es imprimir
+        // Si buffer es igual a "imprimir"
         if (strncmp(buffer, "imprimir ", 9) == 0) {
+            // Lee el nombre del conjunto y lo guarda en conjuntoDestino
             obtenerUltimoConjunto(buffer, &conjuntoDestino, 9);
+            // Si se leyo correctamente buffer
             if (conjuntoDestino[0] != '\0') {
+                // Guarda el dato obtenido en contenedor si es que existe
                 contenedor = tablahash_buscar(th, conjuntoDestino);
+                // Si contenedor no es nulo
                 if (contenedor) {
+                    // Imprime el dato de contenedor y lo libera la memoria de contenedor
                     set_imprimir(contenedor_obtener_dato(contenedor));
                     free(contenedor);
                 } else
+                    // Imprime que no fue encontrado el conjunto
                     printf("No se encontro el conjunto %s", conjuntoDestino);
                 printf("\n");
             } else
                 correcto = 0;
+            // Libera la memoria de conjuntoDestino
             free(conjuntoDestino);
         // checkear inicio hasta "A = "
         } else {
+            // Lee el nombre del conjunto y lo guarda en conjuntoDestino
             pos = obtenerConjuntoDestino(buffer, &conjuntoDestino, 0);
+            // Si no se leyo correctamente buffer
             if (conjuntoDestino[0] == '\0')
                 correcto = 0;
             else {
-                // checkear si es crear conjunto "A = {"
+                // Si el caracter actual de buffer es '{'
                 if (buffer[pos] == '{') {
-                    // checkear si es crear por comprension "A = {x: "
-
+                    // Si buffer cumple cierto formato
                     if (isalpha(buffer[pos + 1]) != 0 && buffer[pos + 2] == ' ' && buffer[pos + 3] == ':' && buffer[pos + 4] == ' ') {
+                        // Guarda en aux el intervalo leido de buffer
                         aux = leer_comprension(buffer, pos + 5, buffer[pos + 1]);
-                        if (aux) {
-                            if (interval_valido(aux)) {
+                        if (aux) { // Si aux no es nulo
+                            if (interval_valido(aux)) { // Si el intervalo es valido
+                                // Inserta aux en setDestino y lo guarda en la tablahash
                                 set_insertar(&setDestino, aux);
                                 tablahash_insertar(th, conjuntoDestino, setDestino, set_destruir);
-                            } else {
+                            } else
                                 printf("Intervalo invalido\n");
-                            }
                         } else
                             correcto = 0;
                     // en caso contrario debe ser por extension "A = {"
                     } else {
+                        // Si buffer cumple cierto formato guarda en setDestino todos los intervalos en el
                         if (leer_extension(buffer, pos + 1, &setDestino)) {
+                            // Inserta setDestino en la tablahash
                             tablahash_insertar(th, conjuntoDestino, setDestino, set_destruir);
                         }
                         else
                             correcto = 0;
                     }
-                // checkear si la operacion es complemento
+                // Si buffer cumple cierto formato
                 } else if (strncmp(buffer, "~ ", 2) == 0 ) {
-                    // obtiene el conjunto de la operacion
+                    // Lee el nombre del conjunto y lo guarda en conjuntoUno
                     obtenerUltimoConjunto(buffer, &conjuntoUno, pos + 2);
+                    // Si se leyo correctamente buffer
                     if (conjuntoUno[0] != '\0')
+                        // Guarda la posicion actual de buffer en operacion
                         operacion = buffer[pos];
                     else
                         correcto = 0;
                 } else {
-                    // obtiene el primer conjunto de la operacion
+                    // Lee el nombre del conjunto y lo guarda en conjuntoUno
                     pos = obtenerPrimerConjunto(buffer, &conjuntoUno, pos);
-                    if (conjuntoUno[0] == '\0')
-                        correcto = 0;
-                    if (correcto == 1) {
-                        // chechea si es una operacion
+                    // Si se leyo correctamente buffer
+                    if (conjuntoUno[0] != '\0') {
+                        // Si buffer cumple cierto formato
                         if ((buffer[pos] == '|' || buffer[pos] == '&' || buffer[pos] == '-') && buffer[pos + 1] == ' ') {
-                            // obtiene el segundo conjunto de la operacion
+                            // Lee el nombre del conjunto y lo guarda en conjuntoDos
                             obtenerUltimoConjunto(buffer, &conjuntoDos, pos + 2);
+                            // Si se leyo correctamente buffer
                             if (conjuntoDos[0] != '\0')
+                                // Guarda la posicion actual de buffer en operacion
                                 operacion = buffer[pos];
                             else {
                                 correcto = 0;
+                                // En caso contrario libera la memoria de conjuntoUno y conjuntoDos
                                 free(conjuntoUno);
                                 free(conjuntoDos);
                             }
                         } else {
                             correcto = 0;
+                            // En caso contrario libera la memoria de conjuntoUno
                             free(conjuntoUno);
                         }
-                    }
+                    } else
+                        correcto = 0;
                 }
+                // Si la operaciones diferente de un espacio
                 if (operacion != ' ') {
+                    // Guarda el dato obtenido en contenedor si es que existe
                     contenedor = tablahash_buscar(th, conjuntoUno);
-                    if (contenedor) {
+                    if (contenedor) { // Si contenedor no es nulo
+                        // Guarda el dato de contenedor en setUno
                         setUno = contenedor_obtener_dato(contenedor);
-                        free(contenedor);
+                        free(contenedor); // Libera la memoria de contenedor
                     } else {
                         operacion = ' ';
+                        // Imprime que no fue encontrado el conjunto
                         printf("No se encontro el conjunto %s\n", conjuntoUno);
                     }
-                    free(conjuntoUno);
+                    free(conjuntoUno); // Libera la memoria de conjuntoUno
+                    // Si la operacion es '~'
                     if (operacion == '~') {
-                        if (contenedor) {
-                            setAux = set_complemento(setUno);
-                            tablahash_insertar(th, conjuntoDestino, setAux, set_destruir);
-                        }
+                        // Guarda en setAux el complemento de setUno y lo inserta en la tablahash
+                        setAux = set_complemento(setUno);
+                        tablahash_insertar(th, conjuntoDestino, setAux, set_destruir);
                     } else {
+                        // Guarda el dato obtenido en contenedor si es que existe
                         contenedor = tablahash_buscar(th, conjuntoDos);
-                        if (contenedor) {
+                        if (contenedor) { // Si contenedor no es nulo
+                            // Guarda el dato de contenedor en setUno
                             setDos = contenedor_obtener_dato(contenedor);
-                            free(contenedor);
+                            free(contenedor); // Libera la memoria de contenedor
                         } else {
                             operacion = ' ';
+                            // Imprime que no fue encontrado el conjunto
                             printf("No se encontro el conjunto %s\n", conjuntoDos);
                         }
-                        free(conjuntoDos);
-                        switch (operacion) {
+                        free(conjuntoDos); // Libera la memoria de conjuntoUno
+                        switch (operacion) { // Chequea cual es la operacion
                             case '|':
-                                // union de conjuntos
+                                // Union de conjuntos
                                 if (setUno != setDos)
                                     setDestino = set_unir(setUno, setDos);
                                 else
                                     setDestino = set_copia(setUno);
+                                // Inserta en la tablahash la union de los conjuntos
                                 tablahash_insertar(th, conjuntoDestino, setDestino, set_destruir);
                                 break;
                             case '&':
-                                // interseccion de conjuntos
+                                // Interseccion de conjuntos
                                 if (setUno != setDos)
                                     setDestino = set_intersecar(setUno, setDos);
                                 else
                                     setDestino = set_copia(setUno);
+                                // Inserta en la tablahash la interseccion de los conjuntos
                                 tablahash_insertar(th, conjuntoDestino, setDestino, set_destruir);
                                 break;
                             case '-':
-                                // resta de conjuntos
+                                // Resta de conjuntos
                                 if (setUno != setDos)
                                     setDestino = set_restar(setUno, setDos);
                                 else
                                     setDestino = set_crear(0);
+                                // Inserta en la tablahash la diferencia de los conjuntos
                                 tablahash_insertar(th, conjuntoDestino, setDestino, set_destruir);
                                 break;
                         }
                     }
                 }
             }
-            free(conjuntoDestino);
+            free(conjuntoDestino); // Libera la memoria de conjuntoDestino
         }
         if (correcto == 0)
             printf("Formato Incorrecto\n");
-        free(buffer);
+        free(buffer); // Libera la memoria de buffer
     }
-    free(buffer);
+    free(buffer); // Libera la memoria de buffer
+    // Destruye la tablahash entera
     tablahash_destruir_entera(th, set_destruir);
     return 0;
 }
