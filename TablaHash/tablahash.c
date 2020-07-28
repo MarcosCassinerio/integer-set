@@ -138,6 +138,16 @@ void linked_list_eliminar(LinkedList **lista, FuncionVisitante funcion) {
   }
 }
 
+/*
+  tablahash_destruir: TablaHash*
+  Destruye la tabla.
+*/
+void tablahash_destruir(TablaHash* tabla) {
+  free(tabla->tabla); // Liberamos la memoria de las casillas de la tabla
+  free(tabla); // Liberamos la memoria de la tabla
+  tabla = NULL; // Le damos valore NULL
+}
+
 void *contenedor_obtener_dato(Contenedor *contenedor) {
   // Si el contenedor no es nulo devuelve el dato, en caso contrario devuelve NULL
   return contenedor ? contenedor->dato : NULL;
@@ -194,12 +204,6 @@ Contenedor *tablahash_buscar(TablaHash *tabla, char *clave) {
   // Si el dato no es nulo retorna un contenedor con el dato en el, en caso 
   // contrario retorna NULL
   return dato ? contenedor_crear(dato) : NULL;
-}
-
-void tablahash_destruir(TablaHash* tabla) {
-  free(tabla->tabla); // Liberamos la memoria de las casillas de la tabla
-  free(tabla); // Liberamos la memoria de la tabla
-  tabla = NULL; // Le damos valore NULL
 }
 
 void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {

@@ -47,12 +47,6 @@ void tablahash_insertar(TablaHash* tabla, char *clave, void* dato, FuncionVisita
 Contenedor *tablahash_buscar(TablaHash* tabla, char *clave);
 
 /*
-  tablahash_destruir: TablaHash*
-  Destruye la tabla.
-*/
-void tablahash_destruir(TablaHash* tabla);
-
-/*
   tablahash_destruir_entera: TablaHash* FuncionVisitante
   Destruye todos los elimentos de la tabla con la funcion dada.
 */
