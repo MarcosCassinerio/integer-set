@@ -252,8 +252,8 @@ Set set_restar(Set set1, Set set2) {
     Set salida1 = set_complemento(set2);
     // Guarda en salida2 la interseccion entre el conjunto1 y salida1
     salida2 = set_intersecar(set1, salida1);
-    set_destruir(salida1);
     // Destruye salida1 ya que era un conjunto auxiliar
+    set_destruir(salida1);
     return salida2; // Retorna salida2
 }
 
