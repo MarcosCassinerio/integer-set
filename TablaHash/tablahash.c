@@ -1,9 +1,5 @@
 #include "tablahash.h"
 
-struct _Contenedor {
-  void *dato;
-};
-
 struct _CasillaHash {
   char *clave;
   void *dato;
@@ -21,16 +17,6 @@ struct _TablaHash {
   unsigned capacidad;
   FuncionHash hash;
 };
-
-/*
-  contenedor_crear: void* -> Contenedor*
-  Retorna un contenedor con el dato proporcionado en el.
-*/
-Contenedor *contenedor_crear(void *dato) {
-  Contenedor *contenedor = malloc(sizeof(Contenedor)); // Pedimos memoria
-  contenedor->dato = dato; // Le asignamos el dato dado
-  return contenedor; // Retornamos el contenedor
-}
 
 /*
   linked_list_crear: CasillaHash -> LinkedList*
@@ -148,11 +134,6 @@ void tablahash_destruir(TablaHash* tabla) {
   tabla = NULL; // Le damos valore NULL
 }
 
-void *contenedor_obtener_dato(Contenedor *contenedor) {
-  // Si el contenedor no es nulo devuelve el dato, en caso contrario devuelve NULL
-  return contenedor ? contenedor->dato : NULL;
-}
-
 TablaHash *tablahash_crear(FuncionHash hash, unsigned capacidad) {
   // Pedimos memoria para la estructura principal.
   TablaHash *tabla = malloc(sizeof(TablaHash));
@@ -193,7 +174,7 @@ void tablahash_insertar(TablaHash *tabla, char *clave, void *dato, FuncionVisita
   linked_list_insertar(&(tabla->tabla[idx]), casilla, funcion);
 }
 
-Contenedor *tablahash_buscar(TablaHash *tabla, char *clave) {
+void *tablahash_buscar(TablaHash *tabla, char *clave) {
   // Guarda la posicion donde buscara el dato.
   unsigned idx = tabla->hash(clave);
   idx = idx % tabla->capacidad;
@@ -201,9 +182,7 @@ Contenedor *tablahash_buscar(TablaHash *tabla, char *clave) {
   // Guarda en dato el dato de la lista cuya clave es igual a la clave proporcionada
   void *dato = linked_list_buscar(tabla->tabla[idx], clave);
 
-  // Si el dato no es nulo retorna un contenedor con el dato en el, en caso 
-  // contrario retorna NULL
-  return dato ? contenedor_crear(dato) : NULL;
+  return dato; // Retorna el dato obtenido
 }
 
 void tablahash_destruir_entera(TablaHash *tabla, FuncionVisitante funcion) {

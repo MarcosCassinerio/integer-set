@@ -11,21 +11,11 @@ typedef int (*FuncionHash) (char* clave);
 
 typedef void (*FuncionVisitante) (void *dato);
 
-typedef struct _Contenedor Contenedor;
-
 typedef struct _CasillaHash CasillaHash;
 
 typedef struct _LinkedList LinkedList;
 
 typedef struct _TablaHash TablaHash;
-
-
-/*
-  contenedor_obtener_dato: Contenedor*
-  Dado un contenedor, si no es nulo devuelve su dato, en caso contrario devuelve
-  NULL;
-*/
-void *contenedor_obtener_dato(Contenedor *contenedor);
 
 /*
   tablahash_crear: FuncionHash unsigned -> TablaHash*
@@ -40,11 +30,10 @@ TablaHash* tablahash_crear(FuncionHash hash, unsigned capacidad);
 void tablahash_insertar(TablaHash* tabla, char *clave, void* dato, FuncionVisitante funcion);
 
 /*
-  tablahash_buscar: TablaHash* char* -> Contenedor*
-  Busca un elemento dado en la tabla, y retorna un contenedor con el dato en el.
-  En caso de no existir, se retorna un contenedor nulo.
+  tablahash_buscar: TablaHash* char* -> void*
+  Busca un elemento dado en la tabla, y retorna el dato.
 */
-Contenedor *tablahash_buscar(TablaHash* tabla, char *clave);
+void *tablahash_buscar(TablaHash* tabla, char *clave);
 
 /*
   tablahash_destruir_entera: TablaHash* FuncionVisitante

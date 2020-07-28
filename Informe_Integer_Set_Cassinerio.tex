@@ -137,7 +137,7 @@ Sus implementaciones se encuentran en el archivo \verb|itree.c|, junto con las i
 
 \verb|buscar_inicio_interseccion|
 \subsection{TablaHash}
-La tablahash se encuentra definida junto a la casillahash y a contenedor de la siguiente manera:
+La tablahash se encuentra definida junto a la casillahash y a una linkedlist de la siguiente manera:
 
 \begin{lstlisting}[language=C]
 struct _TablaHash {
@@ -164,12 +164,6 @@ struct _CasillaHash {
 };
 
 typedef struct _CasillaHash CasillaHash;
-
-struct _Contenedor {
-  void *dato;
-};
-
-typedef struct _Contenedor Contenedor;
 
 \end{lstlisting}
 En su archivo cabecera se encuentran declaradas las siguientes funciones:

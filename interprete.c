@@ -214,7 +214,6 @@ int main() {
     Set setDestino = NULL, setUno = NULL, setDos = NULL, setAux = NULL;
     // Crea la tablahash con la funcionhash y tamano dado
     TablaHash *th = tablahash_crear(hash, TAMANO_TH);
-    Contenedor *contenedor = NULL;
     int pos, correcto;
     printf("Crear conjunto por extension: 'A = {-2,5,7,-9}'\n");
     printf("Crear conjunto por comprension: 'A = {x : -9 <= x <= 42}'\n");
@@ -236,13 +235,11 @@ int main() {
             obtenerUltimoConjunto(buffer, &conjuntoDestino, 9);
             // Si se leyo correctamente buffer
             if (conjuntoDestino[0] != '\0') {
-                // Guarda el dato obtenido en contenedor si es que existe
-                contenedor = tablahash_buscar(th, conjuntoDestino);
-                // Si contenedor no es nulo
-                if (contenedor) {
-                    // Imprime el dato de contenedor y lo libera la memoria de contenedor
-                    set_imprimir(contenedor_obtener_dato(contenedor));
-                    free(contenedor);
+                // Guarda el dato obtenido en setDestino
+                setDestino = tablahash_buscar(th, conjuntoDestino);
+                if (setDestino) { // Si setDestino no es nulo
+                    // Imprime setDestino
+                    set_imprimir(setDestino);
                 } else
                     // Imprime que no fue encontrado el conjunto
                     printf("No se encontro el conjunto %s", conjuntoDestino);
@@ -327,36 +324,30 @@ int main() {
                 }
                 // Si la operaciones diferente de un espacio
                 if (operacion != ' ') {
-                    // Guarda el dato obtenido en contenedor si es que existe
-                    contenedor = tablahash_buscar(th, conjuntoUno);
-                    if (contenedor) { // Si contenedor no es nulo
-                        // Guarda el dato de contenedor en setUno
-                        setUno = contenedor_obtener_dato(contenedor);
-                        free(contenedor); // Libera la memoria de contenedor
-                    } else {
-                        operacion = ' ';
+                    // Guarda el dato obtenido en setUno
+                    setUno = tablahash_buscar(th, conjuntoUno);
+                    if (!setUno)
                         // Imprime que no fue encontrado el conjunto
                         printf("No se encontro el conjunto %s\n", conjuntoUno);
-                    }
                     free(conjuntoUno); // Libera la memoria de conjuntoUno
                     // Si la operacion es '~'
                     if (operacion == '~') {
-                        // Guarda en setAux el complemento de setUno y lo inserta en la tablahash
-                        setAux = set_complemento(setUno);
-                        tablahash_insertar(th, conjuntoDestino, setAux, set_destruir);
+                        if (setUno) {
+                            // Guarda en setAux el complemento de setUno y lo inserta en la tablahash
+                            setAux = set_complemento(setUno);
+                            tablahash_insertar(th, conjuntoDestino, setAux, set_destruir);
+                        }
                     } else {
-                        // Guarda el dato obtenido en contenedor si es que existe
-                        contenedor = tablahash_buscar(th, conjuntoDos);
-                        if (contenedor) { // Si contenedor no es nulo
-                            // Guarda el dato de contenedor en setUno
-                            setDos = contenedor_obtener_dato(contenedor);
-                            free(contenedor); // Libera la memoria de contenedor
-                        } else {
+                        // Guarda el dato obtenido en setDos
+                        setDos = tablahash_buscar(th, conjuntoDos);
+                        if (!setDos) {
                             operacion = ' ';
                             // Imprime que no fue encontrado el conjunto
                             printf("No se encontro el conjunto %s\n", conjuntoDos);
                         }
-                        free(conjuntoDos); // Libera la memoria de conjuntoUno
+                        if (!setUno)
+                            operacion = ' ';
+                        free(conjuntoDos); // Libera la memoria de conjuntoDos
                         switch (operacion) { // Chequea cual es la operacion
                             case '|':
                                 // Union de conjuntos
