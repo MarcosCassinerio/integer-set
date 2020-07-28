@@ -49,23 +49,28 @@ El mismo lo corro con:
 \verb|./interprete|
 \\\\Este programa permitira ingresar comandos para crear conjuntos y manipularlos con sus funciones. Los comando aceptados son:
  \begin{itemize}
- 	\item \verb|alias = {1, 2, 3, ..., n}|: crea un conjunto con nombre alias y los elementos dados en el. Ej: \verb|A = {1, 2, 3, 5, 8, 6, 0}|.
- 	\item \verb|alias = {var: x <= var <= y}|: crea un conjunto con nombre alias y el intervalo de enteros que va de 'x' a 'y' en el. Ej: \verb|A = {x: 1 <= x <= 5}|.
+ 	\item \verb|alias = {1,2,3,...,n}|: crea un conjunto con nombre alias y los elementos dados en el. Ej: \verb|A = {1,2,3,5,8,6,0}|.
+ 	\item \verb|alias = {var : x <= var <= y}|: crea un conjunto con nombre alias y el intervalo de enteros que va de 'x' a 'y' en el. Ej: \verb|A = {x : 1 <= x <= 5}|.
  	\item \verb|alias1 = alias2 l alias3|: crea un conjunto con nombre alias1 a partir de la union de los conjuntos con nombres alias2 y alias3. Ej: \verb|A = B l C|.
  	\item \verb|alias1 = alias2 & alias3|: crea un conjunto con nombre alias1 a partir de la interseccion de los conjuntos con nombres alias2 y alias3. Ej: \verb|A = B & C|.
  	\item \verb|alias1 = alias2 - alias3|: crea un conjunto con nombre alias1 a partir de la diferencia entre los conjuntos con nombres alias2 y alias3. Ej: \verb|A = B - C|.
-    \item \verb|alias1 = ~alias2|: crea un conjunto con nombre alias1 a partir del complemento del conjunto con nombre alias2. Ej: \verb|A = ~B|.
+    \item \verb|alias1 = ~ alias2|: crea un conjunto con nombre alias1 a partir del complemento del conjunto con nombre alias2. Ej: \verb|A = ~ B|.
  	\item \verb|salir|: destruye todos los conjuntos creados y termina el programa.
  \end{itemize}
-Los nombres de los conjuntos deben respetar el formato \verb|LetraNumero|. Ej: \verb|A113|.
-La cantidad de números después de la letra esta dada por una variable en el programa.
+
+\section{Formatos aceptados para los alias}
+Los alias no tienen un formato dado, estos pueden contener cualquier caracter y tampoco tienen un tamano maximor.
+
+\section{Mensajes de error devueltos por el interprete}
+Al escribir en la terminal, si se intenta insertar un intervalo por comprension y el intervalo es invalido (el extremo izquierdo es mayor al derecho), se imprimira por pantalla "Intervalo Invalido". En caso de intentar hacer un operacion entre conjuntos, si los conjuntos ingresados no se encuentran en la tablahash, dira por ejemplo "No se encontro el conjunto AB". Finalmente, si alguno de los comandos fue ingresado de manera diferente al formato deseado se imprimira "Formato Incorrecto".
+
 \section{Organizacion de los archivos}
-El programa se divide en 4 partes: Interval, Set, TablaHash e intérprete\\
+El programa se divide en 4 partes: Interval, Set, TablaHash e intérprete.\\
 Por un lado tenemos la implementación y declaración de Interval en los archivos \verb|interval.c| y \verb|interval.h| respectivamente.\\
 Por otro lado tenemos TablaHash hecho de la misma manera, en los archivos \verb|tablahash.c| y \verb|tablahash.h|.\\
-Luego tenemos al conjunto de numeros naturales que hace uso de las dependecias interval. Su implementación y declaración se encuentra en los archivos \verb|set.c| y \verb|set.h|.\\
-Finalmente tenemos en el archivo \verb|interprete.c| el intéprete que es nuestra interfaz del progragama para manipular los los conjuntos de numeros naturales.
-\newpage
+Luego tenemos Set (conjunto de numeros enteros) que hace uso de las dependecias interval. Su implementación y declaración se encuentra en los archivos \verb|set.c| y \verb|set.h|.\\
+Finalmente tenemos en el archivo \verb|interprete.c| el intéprete que es nuestra interfaz del progragama para manipular los los conjuntos de numeros enteros.
+
 \section{Implementaciones y estructuras}
 \subsection{Interval}
 La declaración de interval es la siguiente:
@@ -99,7 +104,8 @@ En su cabecera declaramos las siguientes funciones:
 \verb|interval_comparar|
 
 \verb|interval_copy|\\\\
-Sus implentaciones se encuentran en \verb|interval.c|.
+Sus implentaciones se encuentran en \verb|interval.c|.\\
+
 \subsection{Set}
 El conjunto de numeros enteros se encuentra definido de la siguiente manera:
 
@@ -131,15 +137,24 @@ En su archivo cabecera se encuentran declaradas las siguientes funciones:
 \verb|set_complemento|
 
 \verb|set_imprimir|\\\\
-Sus implementaciones se encuentran en el archivo \verb|itree.c|, junto con las implementaciones de las funciones:
+Sus implementaciones se encuentran en el archivo \verb|itree.c|, junto con las implementaciones de las funciones:\\
 
 \verb|set_insertar_ultimo|
 
-\verb|buscar_inicio_interseccion|
+\verb|buscar_inicio_interseccion|\\
+
 \subsection{TablaHash}
-La tablahash se encuentra definida junto a la casillahash y a una linkedlist de la siguiente manera:
+La tablahash se encuentra definida junto a la casillahash y a linkedList de la siguiente manera:
 
 \begin{lstlisting}[language=C]
+struct _LinkedList {
+  CasillaHash casilla;
+  struct _LinkedList *ant;
+  struct _LinkedList *sig;
+};
+
+typedef struct _LinkedList LinkedList;
+
 struct _TablaHash {
   LinkedList **tabla;
   unsigned numElems;
@@ -149,14 +164,6 @@ struct _TablaHash {
 };
 
 typedef struct _TablaHash TablaHash;
-
-struct _LinkedList {
-  CasillaHash casilla;
-  struct _LinkedList *ant;
-  struct _LinkedList *sig;
-};
-
-typedef struct _LinkedList LinkedList;
 
 struct _CasillaHash {
   char *clave;
@@ -168,8 +175,6 @@ typedef struct _CasillaHash CasillaHash;
 \end{lstlisting}
 En su archivo cabecera se encuentran declaradas las siguientes funciones:
 
-\verb|contenedor_obtener_dato|
-
 \verb|tablahash_crear|
 
 \verb|tablahash_insertar|
@@ -177,9 +182,7 @@ En su archivo cabecera se encuentran declaradas las siguientes funciones:
 \verb|tablahash_buscar|
 
 \verb|tablahash_destruir_entera|\\\\
-Sus implementaciones se encuentran en el archivo \verb|tablahash.c|, junto con las implementaciones de las funciones:
-
-\verb|contenedor_crear|
+Sus implementaciones se encuentran en el archivo \verb|tablahash.c|, junto con las implementaciones de las funciones:\\
 
 \verb|linked_list_insertar|
 
@@ -187,7 +190,7 @@ Sus implementaciones se encuentran en el archivo \verb|tablahash.c|, junto con l
 
 \verb|linked_list_eliminar|
 
-\verb|tablahash_destruir|
+\verb|tablahash_destruir|\\
 
 \subsection{Interprete}
 El interprete se encuentra el main del programa, este se encarga de leer la entrada estandar, validarla, ejecutar las funciones de Set e intervalo según la entrada y guardar los conjuntos creados a partir de las funciones de TablaHash. En este archivo estan implementadas las siguientes funciones:
@@ -204,7 +207,7 @@ El interprete se encuentra el main del programa, este se encarga de leer la entr
 
 \verb|obtenerPrimerConjunto|
 
-\verb|obtenerUltimoConjunto|
+\verb|obtenerUltimoConjunto|\\
 
 \section{Desarrollo y complicaciones}
 Antes de empezar con la implementacion de conjunto tuve que averiguar como representar los elementos ya que si habia elementos contiguos los deberia representar como un intervalo cuando el usuario quisiera imprimir el conjunto. Debido a esto tuve que que implementar interval antes de seguir con el conjunto. 
