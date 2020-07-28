@@ -64,9 +64,8 @@ Interval *interval_interseccion(Interval *interval1, Interval *interval2);
 
 /*
   interval_comparar: Interval* Interval* -> int
-  Dados 2 intervalos, retorna un numero mayor a 0 si el extremo izquierdo del
-  primer intervalo es mayor al del segundo, 0 si son iguales y uno menor a 0
-  si es menor en caso contrario.
+  Dados 2 intervalos, retorna un 1 si el extremo izquierdo del primer intervalo 
+  es mayor al del segundo, 0 si son iguales y -1 si es menor en caso contrario.
 */
 int interval_comparar(Interval *interval1, Interval *interval2);
 

@@ -77,8 +77,13 @@ Interval *interval_interseccion(Interval *interval1, Interval *interval2) {
 }
 
 int interval_comparar(Interval *interval1, Interval *interval2) {
-  // Retorna la diferencia de sus intervalos izquierdos
-  return interval1->extremoIzq - interval2->extremoIzq;
+  // Si el extremo izquierde del intervalo1 es menor al del intervalo2
+  if (interval1->extremoIzq < interval2->extremoIzq)
+    return -1;
+  // Si el extremo izquierde del intervalo1 es mayor al del intervalo2
+  else if (interval1->extremoIzq > interval2->extremoDer)
+    return 1;
+  return 0;
 }
 
 Interval *interval_copy(Interval *interval) {

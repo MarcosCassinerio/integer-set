@@ -17,6 +17,9 @@ void set_insertar_ultimo(Set *set, Interval *interval) {
         (*set)->size++; // Aumenta el tamano de la cantidad de intervalos actuales
     }
 }
+// MIN:-1, 4:MAX
+// 4:5
+// 1 2
 
 /*
   buscar_inicio_interseccion: Interval** Interval* int int -> int
@@ -24,9 +27,8 @@ void set_insertar_ultimo(Set *set, Interval *interval) {
   del menor intervalo del array de intervalos que interseca con el intervalo dado.
 */
 int buscar_inicio_interseccion(Interval **intervalArray, Interval *interval, int inicio, int final) {
-    if (inicio == final) {
+    if (inicio == final)
         return inicio;
-    }
     int posicion = (inicio + final) / 2;
     Interval *intervalAux = intervalArray[posicion - 1];
     // Si interval es menor a intervalAux
@@ -213,6 +215,8 @@ Set set_unir(Set set1, Set set2) {
         set_insertar_ultimo(&salida, intervalInsertar);
     return salida; // Retorna salida
 }
+// -3:-1 4:5
+// MIN:-1 4:MAX
 
 Set set_intersecar(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 1, terminado;
@@ -221,14 +225,15 @@ Set set_intersecar(Set set1, Set set2) {
     Set salida = set_crear(set1->size + set2->size - 1);
     if (!set1->size || !set2->size) // Si el tamano de alguno de los conjuntos es 0
         return salida;
-    for (terminado = 0; posicion1 < set1->size && posicion2 <= set2->size; posicion1 ++) {
+    for (; posicion1 < set1->size && posicion2 <= set2->size; posicion1 ++) {
+        terminado = 0;
         // Halla la posicion del menor intervalo del conjunto 2 que interseca 
         // con el intervalo actual si es que existe
         posicion2 = buscar_inicio_interseccion(set2->intervalArray, set1->intervalArray[posicion1], posicion2, set2->size);
         while (posicion2 <= set2->size && !terminado) {
             // Guarda en interseccion la interseccion entre los intervalos
             interseccion = interval_interseccion(set1->intervalArray[posicion1], set2->intervalArray[posicion2 - 1]);
-            if (interseccion) { // SI interseccion no es nulo
+            if (interseccion) { // Si interseccion no es nulo
                 // Inserta la interseccion al final del conjunto de salida
                 set_insertar_ultimo(&salida, interseccion);
                 posicion2 ++;
@@ -242,12 +247,12 @@ Set set_intersecar(Set set1, Set set2) {
 }
 
 Set set_restar(Set set1, Set set2) {
+    Set salida2 = NULL;
     // Guarda en salida1 el complemento del conjunto2
     Set salida1 = set_complemento(set2);
     // Guarda en salida2 la interseccion entre el conjunto1 y salida1
-    Set salida2 = set_intersecar(set1, salida1);
+    salida2 = set_intersecar(set1, salida1);
     // Destruye salida1 ya que era un conjunto auxiliar
-    set_destruir(salida1);
     return salida2; // Retorna salida2
 }
 

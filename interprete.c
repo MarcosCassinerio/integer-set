@@ -5,7 +5,7 @@
 #include <math.h>
 #define LEN_MAX 100
 #define MAX_INTERVALS 50
-#define TAMANO_TH 100
+#define TAMANO_TH 1000
 #define LEN_SET 5
 
 int hash(char *clave) {
@@ -271,7 +271,7 @@ int main() {
                                 set_insertar(&setDestino, aux);
                                 tablahash_insertar(th, conjuntoDestino, setDestino, set_destruir);
                             } else
-                                printf("Intervalo invalido\n");
+                                printf("Intervalo Invalido\n");
                         } else
                             correcto = 0;
                     // en caso contrario debe ser por extension "A = {"
