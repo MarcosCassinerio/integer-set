@@ -1,0 +1,214 @@
+==2636== Memcheck, a memory error detector
+==2636== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2636== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==2636== Command: ./interprete
+==2636== Parent PID: 2526
+==2636== 
+--2636-- 
+--2636-- Valgrind options:
+--2636--    --leak-check=full
+--2636--    --show-leak-kinds=all
+--2636--    --track-origins=yes
+--2636--    --verbose
+--2636--    --log-file=valgrind-out.txt
+--2636-- Contents of /proc/version:
+--2636--   Linux version 5.4.0-42-generic (buildd@lgw01-amd64-023) (gcc version 7.5.0 (Ubuntu 7.5.0-3ubuntu1~18.04)) #46~18.04.1-Ubuntu SMP Fri Jul 10 07:21:24 UTC 2020
+--2636-- 
+--2636-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-avx2
+--2636-- Page sizes: currently 4096, max supported 4096
+--2636-- Valgrind library directory: /usr/lib/valgrind
+--2636-- Reading syms from /home/your/Desktop/integer-set/interprete
+--2636-- Reading syms from /lib/x86_64-linux-gnu/ld-2.27.so
+--2636--   Considering /lib/x86_64-linux-gnu/ld-2.27.so ..
+--2636--   .. CRC mismatch (computed ac9397f6 wanted d0d82632)
+--2636--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.27.so ..
+--2636--   .. CRC is valid
+--2636-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
+--2636--   Considering /usr/lib/valgrind/memcheck-amd64-linux ..
+--2636--   .. CRC mismatch (computed 41ddb025 wanted 9972f546)
+--2636--    object doesn't have a symbol table
+--2636--    object doesn't have a dynamic symbol table
+--2636-- Scheduler: using generic scheduler lock implementation.
+--2636-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==2636== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-2636-by-your-on-???
+==2636== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-2636-by-your-on-???
+==2636== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-2636-by-your-on-???
+==2636== 
+==2636== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==2636== don't want to do, unless you know exactly what you're doing,
+==2636== or are doing some strange experiment):
+==2636==   /usr/lib/valgrind/../../bin/vgdb --pid=2636 ...command...
+==2636== 
+==2636== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==2636==   /path/to/gdb ./interprete
+==2636== and then give GDB the following command
+==2636==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=2636
+==2636== --pid is optional if only one valgrind process is running
+==2636== 
+--2636-- REDIR: 0x401f320 (ld-linux-x86-64.so.2:strlen) redirected to 0x580608c1 (???)
+--2636-- REDIR: 0x401f100 (ld-linux-x86-64.so.2:index) redirected to 0x580608db (???)
+--2636-- Reading syms from /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+--2636--   Considering /usr/lib/valgrind/vgpreload_core-amd64-linux.so ..
+--2636--   .. CRC mismatch (computed 50df1b30 wanted 4800a4cf)
+--2636--    object doesn't have a symbol table
+--2636-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+--2636--   Considering /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so ..
+--2636--   .. CRC mismatch (computed f893b962 wanted 95ee359e)
+--2636--    object doesn't have a symbol table
+==2636== WARNING: new redirection conflicts with existing -- ignoring it
+--2636--     old: 0x0401f320 (strlen              ) R-> (0000.0) 0x580608c1 ???
+--2636--     new: 0x0401f320 (strlen              ) R-> (2007.0) 0x04c32db0 strlen
+--2636-- REDIR: 0x401d390 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c33ee0 (strcmp)
+--2636-- REDIR: 0x401f860 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c374f0 (mempcpy)
+--2636-- Reading syms from /lib/x86_64-linux-gnu/libc-2.27.so
+--2636--   Considering /lib/x86_64-linux-gnu/libc-2.27.so ..
+--2636--   .. CRC mismatch (computed c2c067b2 wanted d73adc7f)
+--2636--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.27.so ..
+--2636--   .. CRC is valid
+--2636-- REDIR: 0x4edace0 (libc.so.6:memmove) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9db0 (libc.so.6:strncpy) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edafc0 (libc.so.6:strcasecmp) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9800 (libc.so.6:strcat) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9de0 (libc.so.6:rindex) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edc830 (libc.so.6:rawmemchr) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edae50 (libc.so.6:mempcpy) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edac80 (libc.so.6:bcmp) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9d70 (libc.so.6:strncmp) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9870 (libc.so.6:strcmp) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edadb0 (libc.so.6:memset) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ef8160 (libc.so.6:wcschr) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9d10 (libc.so.6:strnlen) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed98e0 (libc.so.6:strcspn) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edb010 (libc.so.6:strncasecmp) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed98b0 (libc.so.6:strcpy) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edb150 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9e10 (libc.so.6:strpbrk) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9830 (libc.so.6:index) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ed9ce0 (libc.so.6:strlen) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ee4730 (libc.so.6:memrchr) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edb060 (libc.so.6:strcasecmp_l) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edac50 (libc.so.6:memchr) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4ef8f20 (libc.so.6:wcslen) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4eda0c0 (libc.so.6:strspn) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edaf90 (libc.so.6:stpncpy) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edaf60 (libc.so.6:stpcpy) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edc860 (libc.so.6:strchrnul) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4edb0b0 (libc.so.6:strncasecmp_l) redirected to 0x4a2a6e0 (_vgnU_ifunc_wrapper)
+--2636-- REDIR: 0x4fca630 (libc.so.6:__strrchr_avx2) redirected to 0x4c32730 (rindex)
+--2636-- REDIR: 0x4ed30e0 (libc.so.6:malloc) redirected to 0x4c2faa0 (malloc)
+--2636-- REDIR: 0x4fca800 (libc.so.6:__strlen_avx2) redirected to 0x4c32cf0 (strlen)
+--2636-- REDIR: 0x4fcad20 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4c37130 (mempcpy)
+--2636-- REDIR: 0x4fa5fd0 (libc.so.6:__strcmp_ssse3) redirected to 0x4c33da0 (strcmp)
+--2636-- REDIR: 0x4fc1780 (libc.so.6:__strncmp_sse42) redirected to 0x4c33570 (__strncmp_sse42)
+--2636-- REDIR: 0x4fca440 (libc.so.6:__strchrnul_avx2) redirected to 0x4c37020 (strchrnul)
+--2636-- REDIR: 0x4ed39c0 (libc.so.6:free) redirected to 0x4c30cd0 (free)
+--2636-- REDIR: 0x4fb7bc0 (libc.so.6:__strcpy_ssse3) redirected to 0x4c32dd0 (strcpy)
+==2636== Invalid write of size 1
+==2636==    at 0x4C32E0D: strcpy (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AC86: tablahash_insertar (tablahash.c:174)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636==  Address 0x522e7d1 is 0 bytes after a block of size 1 alloc'd
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AC6F: tablahash_insertar (tablahash.c:173)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636== 
+==2636== Invalid read of size 1
+==2636==    at 0x4C33DC4: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AA7B: linked_list_buscar (tablahash.c:109)
+==2636==    by 0x10AD15: tablahash_buscar (tablahash.c:188)
+==2636==    by 0x1092EC: main (interprete.c:241)
+==2636==  Address 0x522e7d1 is 0 bytes after a block of size 1 alloc'd
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AC6F: tablahash_insertar (tablahash.c:173)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636== 
+==2636== 
+==2636== HEAP SUMMARY:
+==2636==     in use at exit: 97 bytes in 8 blocks
+==2636==   total heap usage: 30 allocs, 22 frees, 4,647 bytes allocated
+==2636== 
+==2636== Searching for pointers to 8 not-freed blocks
+==2636== Checked 70,216 bytes
+==2636== 
+==2636== 1 bytes in 1 blocks are indirectly lost in loss record 1 of 7
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AC6F: tablahash_insertar (tablahash.c:173)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636== 
+==2636== 8 bytes in 1 blocks are indirectly lost in loss record 2 of 7
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10990B: interval_crear (interval.c:9)
+==2636==    by 0x109A3D: interval_concat (interval.c:42)
+==2636==    by 0x1099B1: interval_concat (interval.c:34)
+==2636==    by 0x109F25: set_insertar (set.c:98)
+==2636==    by 0x108CF4: leer_extension (interprete.c:77)
+==2636==    by 0x1094D4: main (interprete.c:281)
+==2636== 
+==2636== 8 bytes in 1 blocks are definitely lost in loss record 3 of 7
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10990B: interval_crear (interval.c:9)
+==2636==    by 0x108BF3: leer_extension (interprete.c:58)
+==2636==    by 0x1094D4: main (interprete.c:281)
+==2636== 
+==2636== 16 bytes in 1 blocks are indirectly lost in loss record 4 of 7
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x109CEF: set_crear (set.c:47)
+==2636==    by 0x109EAE: set_insertar (set.c:90)
+==2636==    by 0x108CF4: leer_extension (interprete.c:77)
+==2636==    by 0x1094D4: main (interprete.c:281)
+==2636== 
+==2636== 16 bytes in 1 blocks are indirectly lost in loss record 5 of 7
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x109D0E: set_crear (set.c:50)
+==2636==    by 0x109EAE: set_insertar (set.c:90)
+==2636==    by 0x108CF4: leer_extension (interprete.c:77)
+==2636==    by 0x1094D4: main (interprete.c:281)
+==2636== 
+==2636== 16 bytes in 2 blocks are definitely lost in loss record 6 of 7
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10990B: interval_crear (interval.c:9)
+==2636==    by 0x109A3D: interval_concat (interval.c:42)
+==2636==    by 0x1099B1: interval_concat (interval.c:34)
+==2636==    by 0x109F25: set_insertar (set.c:98)
+==2636==    by 0x108CF4: leer_extension (interprete.c:77)
+==2636==    by 0x1094D4: main (interprete.c:281)
+==2636== 
+==2636== 73 (32 direct, 41 indirect) bytes in 1 blocks are definitely lost in loss record 7 of 7
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10A84A: linked_list_crear (tablahash.c:40)
+==2636==    by 0x10A8E0: linked_list_insertar (tablahash.c:60)
+==2636==    by 0x10ACB7: tablahash_insertar (tablahash.c:179)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636== 
+==2636== LEAK SUMMARY:
+==2636==    definitely lost: 56 bytes in 4 blocks
+==2636==    indirectly lost: 41 bytes in 4 blocks
+==2636==      possibly lost: 0 bytes in 0 blocks
+==2636==    still reachable: 0 bytes in 0 blocks
+==2636==         suppressed: 0 bytes in 0 blocks
+==2636== 
+==2636== ERROR SUMMARY: 5 errors from 5 contexts (suppressed: 0 from 0)
+==2636== 
+==2636== 1 errors in context 1 of 5:
+==2636== Invalid read of size 1
+==2636==    at 0x4C33DC4: strcmp (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AA7B: linked_list_buscar (tablahash.c:109)
+==2636==    by 0x10AD15: tablahash_buscar (tablahash.c:188)
+==2636==    by 0x1092EC: main (interprete.c:241)
+==2636==  Address 0x522e7d1 is 0 bytes after a block of size 1 alloc'd
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AC6F: tablahash_insertar (tablahash.c:173)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636== 
+==2636== 
+==2636== 1 errors in context 2 of 5:
+==2636== Invalid write of size 1
+==2636==    at 0x4C32E0D: strcpy (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AC86: tablahash_insertar (tablahash.c:174)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636==  Address 0x522e7d1 is 0 bytes after a block of size 1 alloc'd
+==2636==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2636==    by 0x10AC6F: tablahash_insertar (tablahash.c:173)
+==2636==    by 0x1094F3: main (interprete.c:283)
+==2636== 
+==2636== ERROR SUMMARY: 5 errors from 5 contexts (suppressed: 0 from 0)

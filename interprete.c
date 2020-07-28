@@ -122,7 +122,7 @@ int obtenerConjuntoDestino(char *string, char **conjunto) {
     int tamano = LEN_SET, pos = 0;
     *conjunto = malloc(sizeof(char) * tamano); // Pide memoria para conjunto
 
-    for (; *string != '\0' && *string != ' '; string ++, pos ++) {
+    for (; *string != '\0' && *string != ' '; string ++) {
         (*conjunto)[pos++] = *string; // Guarda en conjunto el char actual
         // Si el string se llena le damos mas memoria
         if (pos == tamano) {
@@ -254,7 +254,7 @@ int main() {
         // checkear inicio hasta "A = "
         } else {
             // Lee el nombre del conjunto y lo guarda en conjuntoDestino
-            pos = obtenerConjuntoDestino(buffer, &conjuntoDestino, 0);
+            pos = obtenerConjuntoDestino(buffer, &conjuntoDestino);
             // Si no se leyo correctamente buffer
             if (conjuntoDestino[0] == '\0')
                 correcto = 0;
