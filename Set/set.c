@@ -17,9 +17,6 @@ void set_insertar_ultimo(Set *set, Interval *interval) {
         (*set)->size++; // Aumenta el tamano de la cantidad de intervalos actuales
     }
 }
-// MIN:-1, 4:MAX
-// 4:5
-// 1 2
 
 /*
   buscar_inicio_interseccion: Interval** Interval* int int -> int
@@ -215,8 +212,6 @@ Set set_unir(Set set1, Set set2) {
         set_insertar_ultimo(&salida, intervalInsertar);
     return salida; // Retorna salida
 }
-// -3:-1 4:5
-// MIN:-1 4:MAX
 
 Set set_intersecar(Set set1, Set set2) {
     int posicion1 = 0, posicion2 = 1, terminado;
