@@ -237,10 +237,10 @@ int main() {
             if (conjuntoDestino[0] != '\0') {
                 // Guarda el dato obtenido en setDestino
                 setDestino = tablahash_buscar(th, conjuntoDestino);
-                if (setDestino) { // Si setDestino no es nulo
+                if (setDestino) // Si setDestino no es nulo
                     // Imprime setDestino
                     set_imprimir(setDestino);
-                } else
+                else
                     // Imprime que no fue encontrado el conjunto
                     printf("No se encontro el conjunto %s", conjuntoDestino);
                 printf("\n");
@@ -271,7 +271,7 @@ int main() {
                                 printf("Intervalo Invalido\n");
                         } else
                             correcto = 0;
-                    // en caso contrario debe ser por extension "A = {"
+                    // en caso contrario debe ser por extension
                     } else {
                         // Si buffer cumple cierto formato guarda en setDestino todos los intervalos en el
                         if (leer_extension(buffer, pos + 1, &setDestino)) {
